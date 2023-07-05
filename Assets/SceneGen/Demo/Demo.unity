@@ -207,3 +207,71 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1154366778
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1154366780}
+  - component: {fileID: 1154366779}
+  m_Layer: 0
+  m_Name: Demo
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1154366779
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154366778}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9d86e41cd641494abafc13fcc1294b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  DesertBiome: 0
+  ForestBiome: 0
+  MountainBiome: 0
+  WaterBiome: 0
+  CityBiome: 0
+  SnowBiome: 0
+  MinBiomeSize: 0.436
+  MaxBiomeSize: 0.388
+  BiomeTransitionSize: 0.421
+  PlayerHeight: 0.295
+  PlayerJumpHeight: 0.368
+  PlayerSpeed: 0
+  DesertSprite1: {fileID: 0}
+  DesertSprite2: {fileID: 0}
+  ForestSprite1: {fileID: 0}
+  ForestSprite2: {fileID: 0}
+  MountainSprite1: {fileID: 0}
+  MountainSprite2: {fileID: 0}
+  WaterSprite1: {fileID: 0}
+  WaterSprite2: {fileID: 0}
+  CitySprite1: {fileID: 0}
+  CitySprite2: {fileID: 0}
+  SnowSprite1: {fileID: 0}
+  SnowSprite2: {fileID: 0}
+--- !u!4 &1154366780
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1154366778}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
