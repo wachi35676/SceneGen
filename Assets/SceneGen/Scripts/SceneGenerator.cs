@@ -13,5 +13,9 @@ public class SceneGenerator : Editor
         {
             myScript.Generate();
         }
+        if (GUILayout.Button("Clear"))
+        {
+            myScript.Clear();
+        }
     }
 }
