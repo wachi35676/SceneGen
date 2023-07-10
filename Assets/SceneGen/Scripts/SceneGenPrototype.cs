@@ -3,15 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
 public class SceneGenPrototype : MonoBehaviour
 {
     [Header("Select the list of Biomes")]
-    public Boolean DesertBiome;
-    public Boolean ForestBiome;
-    public Boolean MountainBiome;
-    public Boolean WaterBiome;
-    public Boolean CityBiome;
-    public Boolean SnowBiome;
+    public bool DesertBiome;
+    public bool ForestBiome;
+    public bool MountainBiome;
+    public bool WaterBiome;
+    public bool CityBiome;
+    public bool SnowBiome;
 
     [Header("Tune biome ")]
     [Range(0.0f, 100.0f)]
@@ -20,7 +21,7 @@ public class SceneGenPrototype : MonoBehaviour
     public float MaxBiomeSize;
     [Range(0.0f, 1.0f)]
     public float BiomeTransitionSize;
-    
+
     [Header("Add your player's setting")]
     [Range(0.0f, 10.0f)]
     public float PlayerHeight;
@@ -28,30 +29,30 @@ public class SceneGenPrototype : MonoBehaviour
     public float PlayerJumpHeight;
     [Range(0.0f, 10.0f)]
     public float PlayerSpeed;
-    
-    [Header("Add spirites for each biome")]
+
+    [Header("Add sprites for each biome")]
     [Header("Desert")]
     public Sprite DesertSprite1;
     public Sprite DesertSprite2;
-    
+
     [Header("Forest")]
     public GameObject Dirt;
     public GameObject Grass;
     [Range(0.0f, 1.0f)]
     public float Flatness;
-    
+
     [Header("Mountain")]
     public Sprite MountainSprite1;
     public Sprite MountainSprite2;
-    
+
     [Header("Water")]
     public Sprite WaterSprite1;
     public Sprite WaterSprite2;
-    
+
     [Header("City")]
     public Sprite CitySprite1;
     public Sprite CitySprite2;
-    
+
     [Header("Snow")]
     public Sprite SnowSprite1;
     public Sprite SnowSprite2;
@@ -62,13 +63,12 @@ public class SceneGenPrototype : MonoBehaviour
 
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
-        float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
+        float cellSize = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the cell size
         float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
-        float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
 
         for (int i = 0; i < width; i++)
         {
-            float noiseValue = Mathf.PerlinNoise((i + noiseOffset) * noiseScale, 0);
+            float noiseValue = CellularNoise((i + 0.5f) * cellSize, 0);
             int height = Mathf.RoundToInt(noiseValue * heightScale);
 
             // Apply flatness attribute
@@ -84,51 +84,31 @@ public class SceneGenPrototype : MonoBehaviour
         }
     }
 
-
-    
-    /*public void Generate()
+    float CellularNoise(float x, float y) //The input x and y coordinates 
     {
-        Clear();
-        
-        float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
+        Vector2Int[] cellPoints = new Vector2Int[3]; //Immediate neighbours of the input coordinates
+        cellPoints[0] = new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));
+        cellPoints[1] = new Vector2Int(Mathf.CeilToInt(x), Mathf.FloorToInt(y));
+        cellPoints[2] = new Vector2Int(Mathf.FloorToInt(x), Mathf.CeilToInt(y));
 
-        for (int i = 0; i < width; i++)
+        float minDistance = float.MaxValue;
+        for (int i = 0; i < cellPoints.Length; i++)
         {
-            int height = GetWeightedRandomNumber(0, (int)PlayerJumpHeight, 0, Flatness);
-            for (int j = 0; j < height; j++)
-            {
-                Spawn(Dirt, new Vector3(i, j, 0), Quaternion.identity);
-            }
-            int h = (int)height;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
+            //For organic random patterns, unity's random circle is used
+            Vector2 point = cellPoints[i] + UnityEngine.Random.insideUnitCircle; 
+            float distance = Vector2.Distance(new Vector2(x, y), point); //Minimum distance between points and input coordinates
+            minDistance = Mathf.Min(minDistance, distance);
         }
+
+        return minDistance;
     }
-
-    public int GetWeightedRandomNumber(int min, int max, int favoredNumber, float favoredProbability)
-    {
-        float randomValue = UnityEngine.Random.value;
-        float rangeSize = max - min + 1;
-        float favoredRangeSize = rangeSize * favoredProbability;
-
-        // Adjust the favored range size based on the favored number's position within the range
-        favoredRangeSize *= Mathf.Clamp01((favoredNumber - min) / rangeSize) + Mathf.Clamp01((max - favoredNumber) / rangeSize);
-
-        if (randomValue < favoredRangeSize)
-        {
-            return favoredNumber;
-        }
-        else
-        {
-            return UnityEngine.Random.Range(min, max + 1);
-        }
-    }*/
 
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
     {
         obj = Instantiate(obj, position, rotation);
         obj.transform.parent = this.transform;
     }
-    
+
     public void Clear()
     {
         List<Transform> children = new List<Transform>();
