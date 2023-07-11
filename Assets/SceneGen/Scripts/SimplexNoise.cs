@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SceneGenPrototype : MonoBehaviour
+public class SimplexNoise : MonoBehaviour
 {
     [Header("Select the list of Biomes")]
     public bool DesertBiome;
@@ -10,11 +10,6 @@ public class SceneGenPrototype : MonoBehaviour
     public bool WaterBiome;
     public bool CityBiome;
     public bool SnowBiome;
-
-    [Header("Select the list of Noises")] 
-    public bool SimplexNoiseFlag;
-    public bool CellularNoise;
-    public bool PerlinNoise;
 
     [Header("Tune biome ")]
     [Range(0.0f, 100.0f)]
@@ -71,7 +66,7 @@ public class SceneGenPrototype : MonoBehaviour
 
         for (int i = 0; i < width; i++)
         {
-            float noiseValue = SimplexNoise(i * noiseScale + noiseOffset, 0);
+            float noiseValue = SimplexNoiseFunc(i * noiseScale + noiseOffset, 0);
             int height = Mathf.RoundToInt(noiseValue * heightScale);
 
             // Apply flatness attribute
@@ -87,7 +82,7 @@ public class SceneGenPrototype : MonoBehaviour
         }
     }
 
-    float SimplexNoise(float x, float y)
+    float SimplexNoiseFunc(float x, float y)
     {
         float noiseValue = Mathf.PerlinNoise(x, y);
         return noiseValue * 2f - 1f;
