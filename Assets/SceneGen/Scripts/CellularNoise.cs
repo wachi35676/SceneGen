@@ -84,7 +84,7 @@ public class CellularNoise : MonoBehaviour
         }
     }
 
-    float CellularNoiseFunc(float x, float y) //The input x and y coordinates 
+    public float CellularNoiseFunc(float x, float y) //The input x and y coordinates 
     {
         Vector2Int[] cellPoints = new Vector2Int[3]; //Immediate neighbours of the input coordinates
         cellPoints[0] = new Vector2Int(Mathf.FloorToInt(x), Mathf.FloorToInt(y));

@@ -82,7 +82,7 @@ public class SimplexNoise : MonoBehaviour
         }
     }
 
-    float SimplexNoiseFunc(float x, float y)
+    public float SimplexNoiseFunc(float x, float y)
     {
         float noiseValue = Mathf.PerlinNoise(x, y);
         return noiseValue * 2f - 1f;
