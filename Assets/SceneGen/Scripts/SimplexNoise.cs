@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using UnityEngine;
+using NoiseTest;
 
 public class SimplexNoise : MonoBehaviour
 {
@@ -54,6 +55,13 @@ public class SimplexNoise : MonoBehaviour
     public Sprite SnowSprite1;
     public Sprite SnowSprite2;
 
+    private OpenSimplexNoise noiseGenerator;
+
+    private void Awake()
+    {
+        noiseGenerator = new OpenSimplexNoise();
+    }
+
     public void Generate()
     {
         Clear();
@@ -84,8 +92,8 @@ public class SimplexNoise : MonoBehaviour
 
     public float SimplexNoiseFunc(float x, float y)
     {
-        float noiseValue = Mathf.PerlinNoise(x, y);
-        return noiseValue * 2f - 1f;
+        double noiseValue = noiseGenerator.Evaluate(x, y);
+        return (float) noiseValue;
     }
 
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
