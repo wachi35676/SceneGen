@@ -69,7 +69,6 @@ public class SceneGenPrototype : MonoBehaviour
     {
         Clear();
         
-
         Debug.Log("PerlinNoise: " + PerlinNoise);
         if (PerlinNoise)
         {
