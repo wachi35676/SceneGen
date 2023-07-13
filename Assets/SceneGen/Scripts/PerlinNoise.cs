@@ -3,16 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PerlinNoise : MonoBehaviour
+public class PerlinNoise : INoiseGenerator
 {
-    [Header("Select the list of Biomes")]
-    public Boolean DesertBiome;
-    public Boolean ForestBiome;
-    public Boolean MountainBiome;
-    public Boolean WaterBiome;
-    public Boolean CityBiome;
-    public Boolean SnowBiome;
-
+    
     [Header("Tune biome ")]
     [Range(0.0f, 100.0f)]
     public float MinBiomeSize;
@@ -56,9 +49,9 @@ public class PerlinNoise : MonoBehaviour
     public Sprite SnowSprite1;
     public Sprite SnowSprite2;
 
-    public void Generate()
+    public float GenerateNoise()
     {
-        Clear();
+        /*Clear();*/
 
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
@@ -66,10 +59,12 @@ public class PerlinNoise : MonoBehaviour
         float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
         float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
 
-        for (int i = 0; i < width; i++)
-        {
-            float noiseValue = Mathf.PerlinNoise((i + noiseOffset) * noiseScale, 0);
-            int height = Mathf.RoundToInt(noiseValue * heightScale);
+        /*for (int i = 0; i < width; i++)
+        {*/
+        //Removed the i  
+            float noiseValue = Mathf.PerlinNoise((noiseOffset) * noiseScale, 0);
+            return noiseValue;
+            /*int height = Mathf.RoundToInt(noiseValue * heightScale);
 
             // Apply flatness attribute
             int maxHeight = Mathf.RoundToInt(height * (1f - Flatness));
@@ -80,50 +75,11 @@ public class PerlinNoise : MonoBehaviour
             }
 
             int h = (int)maxHeight;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
-        }
+            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);*/
+            /*}*/
     }
 
-
-    
-    /*public void Generate()
-    {
-        Clear();
-        
-        float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
-
-        for (int i = 0; i < width; i++)
-        {
-            int height = GetWeightedRandomNumber(0, (int)PlayerJumpHeight, 0, Flatness);
-            for (int j = 0; j < height; j++)
-            {
-                Spawn(Dirt, new Vector3(i, j, 0), Quaternion.identity);
-            }
-            int h = (int)height;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
-        }
-    }
-
-    public int GetWeightedRandomNumber(int min, int max, int favoredNumber, float favoredProbability)
-    {
-        float randomValue = UnityEngine.Random.value;
-        float rangeSize = max - min + 1;
-        float favoredRangeSize = rangeSize * favoredProbability;
-
-        // Adjust the favored range size based on the favored number's position within the range
-        favoredRangeSize *= Mathf.Clamp01((favoredNumber - min) / rangeSize) + Mathf.Clamp01((max - favoredNumber) / rangeSize);
-
-        if (randomValue < favoredRangeSize)
-        {
-            return favoredNumber;
-        }
-        else
-        {
-            return UnityEngine.Random.Range(min, max + 1);
-        }
-    }*/
-
-    void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
+    /*void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
     {
         obj = Instantiate(obj, position, rotation);
         obj.transform.parent = this.transform;
@@ -141,5 +97,5 @@ public class PerlinNoise : MonoBehaviour
         {
             DestroyImmediate(children[i].gameObject);
         }
-    }
+    }*/
 }

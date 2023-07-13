@@ -62,10 +62,40 @@ public class SceneGenPrototype : MonoBehaviour
     public Sprite SnowSprite1;
     public Sprite SnowSprite2;
 
+    private INoiseGenerator _noiseGenerator;
+
+    /*private void Awake()
+    {
+        Debug.Log("PerlinNoise: " + PerlinNoise);
+        if (PerlinNoise)
+        {
+            _noiseGenerator = new PerlinNoise();
+
+
+
+
+        }
+        /*else if (CellularNoise)
+        {
+            _noiseGenerator = new CellularNoise();
+        }
+        else if (SimplexNoise)
+        {
+            _noiseGenerator = new SimplexNoise();
+        }#1#
+    }*/
+    
     public void Generate()
     {
         Clear();
+        
 
+        Debug.Log("PerlinNoise: " + PerlinNoise);
+        if (PerlinNoise)
+        {
+            _noiseGenerator = new PerlinNoise();
+        }
+        
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
         float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
@@ -74,7 +104,8 @@ public class SceneGenPrototype : MonoBehaviour
 
         for (int i = 0; i < width; i++)
         {
-            float noiseValue = Mathf.PerlinNoise((i + noiseOffset) * noiseScale, 0);
+            float noiseValue = _noiseGenerator.GenerateNoise();/*
+                Mathf.PerlinNoise((i + noiseOffset) * noiseScale, 0);*/
             int height = Mathf.RoundToInt(noiseValue * heightScale);
 
             // Apply flatness attribute
