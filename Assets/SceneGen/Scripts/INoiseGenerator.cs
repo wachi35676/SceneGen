@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface INoiseGenerator
 {
-    float GenerateNoise(float x, float y);
+    float GenerateNoise(int index, float x, float y);
     
     
     

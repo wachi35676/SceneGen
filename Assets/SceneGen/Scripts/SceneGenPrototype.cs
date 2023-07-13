@@ -64,14 +64,13 @@ public class SceneGenPrototype : MonoBehaviour
 
     private INoiseGenerator _noiseGenerator;
     
-    
     public void Generate()
     {
         Clear();
-        
-        Debug.Log("PerlinNoise: " + PerlinNoise);
+        //User Perlin noise's functions if it has been ticked
         if (PerlinNoise)
         {
+            Debug.Log("Perlinnnnnn~");
             _noiseGenerator = new PerlinNoise();
         }
         
@@ -83,8 +82,7 @@ public class SceneGenPrototype : MonoBehaviour
 
         for (int i = 0; i < width; i++)
         {
-            float noiseValue = _noiseGenerator.GenerateNoise();/*
-                Mathf.PerlinNoise((i + noiseOffset) * noiseScale, 0);*/
+            float noiseValue = _noiseGenerator.GenerateNoise(i,noiseOffset,noiseScale);
             int height = Mathf.RoundToInt(noiseValue * heightScale);
 
             // Apply flatness attribute
@@ -99,45 +97,6 @@ public class SceneGenPrototype : MonoBehaviour
             Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
         }
     }
-
-
-    
-    /*public void Generate()
-    {
-        Clear();
-        
-        float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
-
-        for (int i = 0; i < width; i++)
-        {
-            int height = GetWeightedRandomNumber(0, (int)PlayerJumpHeight, 0, Flatness);
-            for (int j = 0; j < height; j++)
-            {
-                Spawn(Dirt, new Vector3(i, j, 0), Quaternion.identity);
-            }
-            int h = (int)height;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
-        }
-    }
-
-    public int GetWeightedRandomNumber(int min, int max, int favoredNumber, float favoredProbability)
-    {
-        float randomValue = UnityEngine.Random.value;
-        float rangeSize = max - min + 1;
-        float favoredRangeSize = rangeSize * favoredProbability;
-
-        // Adjust the favored range size based on the favored number's position within the range
-        favoredRangeSize *= Mathf.Clamp01((favoredNumber - min) / rangeSize) + Mathf.Clamp01((max - favoredNumber) / rangeSize);
-
-        if (randomValue < favoredRangeSize)
-        {
-            return favoredNumber;
-        }
-        else
-        {
-            return UnityEngine.Random.Range(min, max + 1);
-        }
-    }*/
 
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
     {

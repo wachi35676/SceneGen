@@ -5,10 +5,9 @@ using UnityEngine;
 
 public class PerlinNoise : INoiseGenerator
 {
-    
-    public float GenerateNoise(float noiseOffset, float noiseScale)
+    public float GenerateNoise(int index, float noiseOffset, float noiseScale)
     {
-        float noiseValue = Mathf.PerlinNoise((noiseOffset) * noiseScale, 0);
+        float noiseValue = Mathf.PerlinNoise((index + noiseOffset) * noiseScale, 0);
             return noiseValue;
            
     }
