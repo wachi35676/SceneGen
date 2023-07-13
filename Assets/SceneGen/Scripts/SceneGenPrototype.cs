@@ -63,27 +63,7 @@ public class SceneGenPrototype : MonoBehaviour
     public Sprite SnowSprite2;
 
     private INoiseGenerator _noiseGenerator;
-
-    /*private void Awake()
-    {
-        Debug.Log("PerlinNoise: " + PerlinNoise);
-        if (PerlinNoise)
-        {
-            _noiseGenerator = new PerlinNoise();
-
-
-
-
-        }
-        /*else if (CellularNoise)
-        {
-            _noiseGenerator = new CellularNoise();
-        }
-        else if (SimplexNoise)
-        {
-            _noiseGenerator = new SimplexNoise();
-        }#1#
-    }*/
+    
     
     public void Generate()
     {
