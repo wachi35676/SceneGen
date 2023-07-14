@@ -67,13 +67,23 @@ public class SceneGenPrototype : MonoBehaviour
     public void Generate()
     {
         Clear();
-        //User Perlin noise's functions if it has been ticked
+        
         if (PerlinNoise)
         {
             Debug.Log("Perlinnnnnn~");
             _noiseGenerator = new PerlinNoise();
         }
-        
+        else if (CellularNoise)
+        {
+            Debug.Log("Cellularrrrr~");
+            _noiseGenerator = new CellularNoise();
+        }
+        else if (SimplexNoise)
+        {
+            Debug.Log("Simplexxx~");
+            _noiseGenerator = new SimplexNoise();
+        }
+
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
         float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale

@@ -242,7 +242,7 @@ MonoBehaviour:
   WaterBiome: 0
   CityBiome: 0
   SnowBiome: 0
-  PerlinNoise: 1
+  PerlinNoise: 0
   CellularNoise: 0
   SimplexNoise: 0
   MinBiomeSize: 100
