@@ -9,8 +9,9 @@ namespace SceneGen.Scripts
     {
         PerlinNoise,
         CellularNoise,
-        SimplexNoise
-        // You can add more noise types here if needed
+        SimplexNoise,
+        PerlinNoiseAndCellularNoise,
+        PerlinNoiseAndSimplexNoise
     }
 
     public interface INoiseGenerator
@@ -76,6 +77,32 @@ namespace SceneGen.Scripts
         }
     }
 
+    public class PerlinNoiseAndCellularNoise : INoiseGenerator
+    {
+        private PerlinNoise perlin = new PerlinNoise();
+        private CellularNoise cellular = new CellularNoise();
+
+        public float GenerateNoise(int index, float noiseOffset, float cellSizeOrNoiseScale) //The cell size and noise scale are different names for the same variables
+        {
+            return perlin.GenerateNoise(index, noiseOffset, cellSizeOrNoiseScale) +
+                   cellular.GenerateNoise(index, noiseOffset, cellSizeOrNoiseScale);
+        }
+    }
+
+    public class PerlinNoiseAndSimplexNoise : INoiseGenerator
+    {
+        private PerlinNoise perlin = new PerlinNoise();
+        private SimplexNoise simplex = new SimplexNoise();
+
+        public float GenerateNoise(int index, float noiseOffset, float noiseScale) //The cell size and noise scale are different names for the same variables
+        {
+            return perlin.GenerateNoise(index, noiseOffset, noiseScale) +
+                   simplex.GenerateNoise(index, noiseOffset, noiseScale);
+        }
+    }
+    
+    
+
     public class NoiseGeneratorFactory
     {
         private static INoiseGenerator noiseSingleton;
@@ -98,6 +125,12 @@ namespace SceneGen.Scripts
                 case NoiseType.SimplexNoise:
                     noiseSingleton = new SimplexNoise();
                     break;
+                case NoiseType.PerlinNoiseAndCellularNoise:
+                    noiseSingleton = new PerlinNoiseAndCellularNoise();
+                    break;
+                case NoiseType.PerlinNoiseAndSimplexNoise:
+                    noiseSingleton = new PerlinNoiseAndSimplexNoise();
+                    break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(noiseType), noiseType, null);
             }
@@ -118,3 +151,4 @@ namespace SceneGen.Scripts
         
     }
 }
+
