@@ -57,7 +57,7 @@ public class SceneGenPrototype : MonoBehaviour
     [Header("Snow")]
     public Sprite SnowSprite1;
     public Sprite SnowSprite2;
-
+    //
     public float skyGridSize = 0.2f; // Adjust this to control the density of the Worley noise for the sky
     public float skyOffset = 0f;
     public int maxTreeCount = 30;
