@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using SceneGen.Scripts;
 using UnityEngine;
 
 public class SceneGenPrototype : MonoBehaviour
@@ -67,28 +68,24 @@ public class SceneGenPrototype : MonoBehaviour
     public void Generate()
     {
         Clear();
-        
-        if (PerlinNoise)
-        {
-            Debug.Log("Perlinnnnnn~");
-            _noiseGenerator = new PerlinNoise();
-        }
-        else if (CellularNoise)
-        {
-            Debug.Log("Cellularrrrr~");
-            _noiseGenerator = new CellularNoise();
-        }
-        else if (SimplexNoise)
-        {
-            Debug.Log("Simplexxx~");
-            _noiseGenerator = new SimplexNoise();
-        }
 
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
         float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
         float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
         float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
+
+        INoiseGenerator selectedNoiseGenerator = NoiseGeneratorFactory.Instance.GetNoiseGenerator(PerlinNoise);
+
+        if (selectedNoiseGenerator != null)
+        {
+            _noiseGenerator = selectedNoiseGenerator;
+        }
+        else
+        {
+            return;
+        }
+
 
         for (int i = 0; i < width; i++)
         {
