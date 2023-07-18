@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using SceneGen.Scripts;
 using UnityEngine;
+using SceneGen.Scripts; // Import the namespace where the NoiseGeneratorFactory is defined
+
 
 public class SceneGenPrototype : MonoBehaviour
 {
@@ -15,9 +17,7 @@ public class SceneGenPrototype : MonoBehaviour
     public Boolean SnowBiome;
     
     [Header("Select the list of Algorithms")]
-    public Boolean PerlinNoise;
-    public Boolean CellularNoise;
-    public Boolean SimplexNoise;
+    public NoiseType NoiseType;
     
 
     [Header("Tune biome ")]
@@ -68,25 +68,15 @@ public class SceneGenPrototype : MonoBehaviour
     public void Generate()
     {
         Clear();
-
+        
         float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
 
         float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
         float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
         float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
 
-        INoiseGenerator selectedNoiseGenerator = NoiseGeneratorFactory.Instance.GetNoiseGenerator(PerlinNoise);
-
-        if (selectedNoiseGenerator != null)
-        {
-            _noiseGenerator = selectedNoiseGenerator;
-        }
-        else
-        {
-            return;
-        }
-
-
+        INoiseGenerator _noiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
+        
         for (int i = 0; i < width; i++)
         {
             float noiseValue = _noiseGenerator.GenerateNoise(i,noiseOffset,noiseScale);
