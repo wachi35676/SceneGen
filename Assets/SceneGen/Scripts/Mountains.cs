@@ -5,22 +5,24 @@ using UnityEngine;
 public class Mountains : MonoBehaviour
 {
     [SerializeField] private int width, height;
+    [SerializeField] private int minStoneheight, maxStoneHeight;
     [SerializeField] private GameObject dirt, grass, stone ;
     private void Start()
     {
+        Clear();
         GenerateMountains();
     }
 
     public void GenerateMountains()
     {
-        Clear();
+        
         for (int x = 0; x < width; x++)
         {
             int minHeight = height - 1;
-            int maxHeight = height + 1;
+            int maxHeight = height + 2;
             height = Random.Range(minHeight, maxHeight);
-            int minStoneSpawnDistance = height - 5;
-            int maxStoneSpawnDistance = height - 6;
+            int minStoneSpawnDistance = height - minStoneheight;
+            int maxStoneSpawnDistance = height - maxStoneHeight;
             int totalStoneSpawnDistance = Random.Range(minStoneSpawnDistance, maxStoneSpawnDistance);
             
             for (int y = 0; y < height; y++)
@@ -35,7 +37,15 @@ public class Mountains : MonoBehaviour
                 }
                 
             }
-            spawnObj(grass,x,height);
+
+            if (totalStoneSpawnDistance == height)
+            {
+                spawnObj(stone, x, height);
+            }
+            else
+            {
+                spawnObj(grass,x,height);
+            }
         }
     }
 
