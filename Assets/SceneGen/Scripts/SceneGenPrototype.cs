@@ -30,8 +30,6 @@ public class SceneGenPrototype : MonoBehaviour
     
     [Header("Add your player's setting")]
     [Range(0.0f, 10.0f)]
-    public float PlayerHeight;
-    [Range(0.0f, 10.0f)]
     public float PlayerJumpHeight;
     [Range(0.0f, 10.0f)]
     public float PlayerSpeed;
@@ -68,39 +66,26 @@ public class SceneGenPrototype : MonoBehaviour
     public void Generate()
     {
         Clear();
-        
-        /*float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
-
-        float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
-        float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
-        float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
-
-        INoiseGenerator _noiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
-        
-        for (int i = 0; i < width; i++)
-        {
-            float noiseValue = _noiseGenerator.GenerateNoise(i,noiseOffset,noiseScale);
-            int height = Mathf.RoundToInt(noiseValue * heightScale);
-
-            // Apply flatness attribute
-            int maxHeight = Mathf.RoundToInt(height * (1f - Flatness));
-
-            for (int j = 0; j < maxHeight; j++)
-            {
-                Spawn(Dirt, new Vector3(i, j, 0), Quaternion.identity);
-            }
-
-            int h = (int)maxHeight;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
-        }*/
-        
         SceneGeneration();
     }
 
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation)
     {
+        // Random rotation for the object only in increments of 90 degrees
+        rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
+        
         obj = Instantiate(obj, position, rotation);
-        obj.transform.parent = this.transform;
+        
+        Sprite sprite = obj.GetComponent<SpriteRenderer>().sprite;
+        var localScale = obj.transform.localScale;
+        
+        localScale = new Vector3(localScale.x / sprite.bounds.size.x, localScale.y / sprite.bounds.size.y, 1);
+        obj.transform.localScale = localScale;
+        
+        //give it a box collider
+        obj.AddComponent<BoxCollider2D>();
+
+        obj.transform.parent = transform;
     }
     
     public void Clear()
@@ -142,6 +127,19 @@ public class SceneGenPrototype : MonoBehaviour
 
             int h = (int)maxHeight;
             Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
+            
+            //Generate platforms
+            if (UnityEngine.Random.Range(0, 100) < 10)
+            {
+                float gap = UnityEngine.Random.Range(1, PlayerSpeed);
+                float platformWidth = UnityEngine.Random.Range(1, 10);
+                float platformHeight = UnityEngine.Random.Range(1, PlayerJumpHeight);
+                for (int k = 1; k <= platformWidth; k++)
+                {
+                    Spawn(Dirt, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+                }
+                i += (int) gap + (int) platformWidth;
+            }
         }
     }
 }
