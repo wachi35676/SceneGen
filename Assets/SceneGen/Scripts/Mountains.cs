@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Mountains : MonoBehaviour
 {
-    [SerializeField] private int width, height;
+    [SerializeField] private int width, height=10;
     [SerializeField] private int minStoneHeight, maxStoneHeight;
     [SerializeField] private GameObject dirt, grass, stone;
     [SerializeField] private int numberOfGaps;
@@ -20,7 +20,7 @@ public class Mountains : MonoBehaviour
         List<int> gapStartIndices = new List<int>();
         while (gapStartIndices.Count < numberOfGaps)
         {
-            int gapStartIndex = Random.Range(1, width - maxGapWidth);
+            int gapStartIndex = Random.Range(1, width - maxGapWidth - 1); // Subtract 1 from width - maxGapWidth
             if (!gapStartIndices.Contains(gapStartIndex))
             {
                 gapStartIndices.Add(gapStartIndex);
@@ -39,6 +39,20 @@ public class Mountains : MonoBehaviour
             if (gapStartIndices.Contains(x))
             {
                 int gapWidth = Random.Range(1, maxGapWidth + 1);
+                if (gapWidth > 5)
+                {
+                    int platformWidth = Mathf.Min(gapWidth - 2, width - x - 2); // Subtract 2 from gapWidth and width - x
+                    int platformStartX = x + 1; // Add 1 to x
+
+                    if (platformWidth > 0)
+                    {
+                        for (int i = platformStartX; i < platformStartX + platformWidth; i++) // Use < instead of <=
+                        {
+                            spawnObj(dirt, i, height);
+                        }
+                    }
+                }
+
                 x += gapWidth - 1;
                 continue;
             }
@@ -79,7 +93,6 @@ public class Mountains : MonoBehaviour
         {
             children.Add(child);
         }
-
         for (int i = 0; i < children.Count; i++)
         {
             DestroyImmediate(children[i].gameObject);
