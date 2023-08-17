@@ -10,9 +10,9 @@ GameObject:
   m_Component:
   - component: {fileID: 4166698258765514910}
   - component: {fileID: 1329681299161438741}
-  - component: {fileID: 6224622763596439071}
+  - component: {fileID: 6221826270470708503}
   m_Layer: 0
-  m_Name: PixelDirt
+  m_Name: PixelGrassCorner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -74,7 +74,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Sprite: {fileID: 21300000, guid: 6a444994fb0249c4d9a9a4140aa2026e, type: 3}
+  m_Sprite: {fileID: 21300000, guid: add9673fcb4d8f547852a084dd1870bc, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -85,8 +85,8 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!61 &6224622763596439071
-BoxCollider2D:
+--- !u!60 &6221826270470708503
+PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -102,12 +102,25 @@ BoxCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 8, y: 8}
+    oldSize: {x: 10, y: 10}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  serializedVersion: 2
-  m_Size: {x: 8, y: 8}
-  m_EdgeRadius: 0
+  m_Points:
+    m_Paths:
+    - - {x: 3.11, y: -3.1299999}
+      - {x: 2.49, y: -3.1299999}
+      - {x: 2.54, y: -2.44}
+      - {x: 1.23, y: -1.23}
+      - {x: 0.61, y: -0.62}
+      - {x: -1.89, y: 1.88}
+      - {x: -2.5, y: 1.88}
+      - {x: -2.46, y: 2.51}
+      - {x: -4.38, y: 4.37}
+      - {x: -5, y: 4.37}
+      - {x: -5, y: -5}
+      - {x: 4.38, y: -5}
+      - {x: 4.38, y: -4.3399997}
+      - {x: 3.75, y: -3.73}
