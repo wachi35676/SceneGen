@@ -68,32 +68,6 @@ public class SceneGenPrototype : MonoBehaviour
     public void Generate()
     {
         Clear();
-        
-        /*float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
-
-        float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f); // Randomize the noise scale
-        float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f); // Randomize the height scale
-        float noiseOffset = UnityEngine.Random.Range(-100f, 100f); // Randomize the noise offset
-
-        INoiseGenerator _noiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
-        
-        for (int i = 0; i < width; i++)
-        {
-            float noiseValue = _noiseGenerator.GenerateNoise(i,noiseOffset,noiseScale);
-            int height = Mathf.RoundToInt(noiseValue * heightScale);
-
-            // Apply flatness attribute
-            int maxHeight = Mathf.RoundToInt(height * (1f - Flatness));
-
-            for (int j = 0; j < maxHeight; j++)
-            {
-                Spawn(Dirt, new Vector3(i, j, 0), Quaternion.identity);
-            }
-
-            int h = (int)maxHeight;
-            Spawn(Grass, new Vector3(i, h, 0), Quaternion.identity);
-        }*/
-        
         SceneGeneration();
     }
 
