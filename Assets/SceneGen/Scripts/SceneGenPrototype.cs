@@ -79,6 +79,8 @@ public class SceneGenPrototype : MonoBehaviour
         Clear();
         SceneGeneration();
     }
+    
+    //Scaling the textures
 
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int scale = 1)
     {
@@ -93,7 +95,7 @@ public class SceneGenPrototype : MonoBehaviour
         obj.transform.parent = transform;
     }
 
-    
+    //Picking the children and destroying them all
     public void Clear()
     {
         List<Transform> children = new List<Transform>();
@@ -107,6 +109,8 @@ public class SceneGenPrototype : MonoBehaviour
             DestroyImmediate(children[i].gameObject);
         }
     }
+    
+ //   
 public void SceneGeneration()
 {
     // Generate a random width for the biome
@@ -149,6 +153,8 @@ public void SceneGeneration()
 
         if (CornerGrass != null)
         {
+            
+            //Determining the height of the previous platform to generate the next platform
             // Handle corner grass placement
             if (height > lastHeight)
             {
