@@ -54,6 +54,7 @@ public class SceneGenPrototype : MonoBehaviour
     
     [Header("(Optional) Add corner grass")]
     public GameObject CornerGrass;
+    public GameObject CornerGrassWide;
     
     [Header("Mountain")]
     public Sprite MountainSprite1;
@@ -132,16 +133,32 @@ public class SceneGenPrototype : MonoBehaviour
             noiseValue = _noiseGenerator.GenerateNoise(i, noiseOffset, noiseScale);
             
             height = Mathf.RoundToInt(noiseValue * heightScale);
-            
-            if (height > lastHeight)
+
+            if (CornerGrass != null)
             {
-                Spawn(CornerGrass, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
-                dirtCount = 2;
+                if (height > lastHeight)
+                {
+                    Spawn(CornerGrass, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
+                }
+                else if (height < lastHeight)
+                {
+                    Spawn(CornerGrass, new Vector3(i + offset + 1, height + 1, 0), Quaternion.identity);
+                }
             }
-            else if (height < lastHeight)
+            else if (CornerGrassWide != null)
             {
-                Spawn(CornerGrass, new Vector3((i + offset) + 1f/2f, (height) + 1f/2f, 0), Quaternion.identity, 2);
-                dirtCount = 2;
+            
+                if (height > lastHeight)
+                {
+                    Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
+                    dirtCount = 2;
+                }
+                else if (height < lastHeight)
+                {
+                    Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) + 1f / 2f, 0), Quaternion.identity, 2);
+                    dirtCount = 2;
+                }
+                
             }
 
             for (int j = 0; j < lastHeight; j++)
