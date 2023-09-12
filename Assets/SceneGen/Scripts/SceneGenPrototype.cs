@@ -6,6 +6,7 @@ using UnityEngine;
 using SceneGen.Scripts;
 using UnityEngine.Serialization; // Import the namespace where the NoiseGeneratorFactory is defined
 
+//Beach Biome, Zoya Mahboob 20i-0524
 
 public class SceneGenPrototype : MonoBehaviour
 {
@@ -40,23 +41,24 @@ public class SceneGenPrototype : MonoBehaviour
     public Sprite DesertSprite1;
     public Sprite DesertSprite2;
     
-    [Header("Forest")]
-    public GameObject Dirt;
-    public GameObject DirtEdge1;
-    public GameObject DirtEdge2;
-    public GameObject GrassMiddle;
-    public GameObject GrassMiddle2;
+    
+    [Header("Beach")]
+    public GameObject BaseSand;
+    public GameObject BaseSand1;
+    public GameObject BaseSand2;
+    public GameObject TopSand;
+    public GameObject TopSand2;
 
-    public GameObject GrassPlatformEdge;
-    public GameObject GrassPlatformLeft;
-    public GameObject GrassPlatformRight;
-    public GameObject GrassPlatformMiddle;
+    public GameObject SandPlatformEdge;
+    public GameObject SandPlatformLeft;
+    public GameObject SandPlatformRight;
+    public GameObject SandPlatformMiddle;
     
     [Header("(Optional) Add corner grass")]
-    public GameObject CornerGrass;
-    public GameObject CornerGrassWide;
+    public GameObject CornerSand;
+    public GameObject CornerSandWide;
     
-    [Header("Mountain")]
+    /*[Header("Mountain")]
     public Sprite MountainSprite1;
     public Sprite MountainSprite2;
     
@@ -70,7 +72,7 @@ public class SceneGenPrototype : MonoBehaviour
     
     [Header("Snow")]
     public Sprite SnowSprite1;
-    public Sprite SnowSprite2;
+    public Sprite SnowSprite2;*/
 
     private INoiseGenerator _noiseGenerator;
     
@@ -81,7 +83,6 @@ public class SceneGenPrototype : MonoBehaviour
     }
     
     //Scaling the textures
-
     void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int scale = 1)
     {
         obj = Instantiate(obj, position, rotation);
@@ -120,7 +121,8 @@ public void SceneGeneration()
     float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
     
     // Randomize the height scale
-    float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f);
+    float heightScale = 3f + UnityEngine.Random.Range(-1f, 1f);
+    //float heightScale = 2f + UnityEngine.Random.Range(-1f, 1f);
 
     // Randomize the noise offset
     float noiseOffset = UnityEngine.Random.Range(-100f, 100f);
@@ -151,7 +153,7 @@ public void SceneGeneration()
         // Calculate the height based on the current noise value
         height = Mathf.RoundToInt(noiseValue * heightScale);
 
-        if (CornerGrass != null)
+        if (CornerSand != null)
         {
             
             //Determining the height of the previous platform to generate the next platform
@@ -159,27 +161,27 @@ public void SceneGeneration()
             if (height > lastHeight)
             {
                 // Spawn corner grass at higher terrain
-                Spawn(CornerGrass, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
+                Spawn(CornerSand, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
             }
             else if (height < lastHeight)
             {
                 // Spawn corner grass at lower terrain
-                Spawn(CornerGrass, new Vector3(i + offset + 1, height + 1, 0), Quaternion.identity);
+                Spawn(CornerSand, new Vector3(i + offset + 1, height + 1, 0), Quaternion.identity);
             }
         }
-        else if (CornerGrassWide != null)
+        else if (CornerSandWide != null)
         {
             // Handle wider corner grass placement
             if (height > lastHeight)
             {
                 // Spawn wider corner grass at higher terrain
-                Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
+                Spawn(CornerSandWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
                 dirtCount = 2;
             }
             else if (height < lastHeight)
             {
                 // Spawn wider corner grass at lower terrain
-                Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) + 1f / 2f, 0), Quaternion.identity, 2);
+                Spawn(CornerSandWide, new Vector3((i + offset) + 1f / 2f, (height) + 1f / 2f, 0), Quaternion.identity, 2);
                 dirtCount = 2;
             }
         }
@@ -188,7 +190,7 @@ public void SceneGeneration()
         {
             // Randomly rotate the dirt objects in 90-degree increments
             rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
-            Spawn(Dirt, new Vector3(i + offset, j, 0), rotation);
+            Spawn(BaseSand, new Vector3(i + offset, j, 0), rotation);
         }
         
         rotation = Quaternion.identity;
@@ -199,11 +201,11 @@ public void SceneGeneration()
             {
                 case 0:
                     // Spawn middle grass
-                    Spawn(GrassMiddle, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(TopSand, new Vector3(i + offset, h, 0), rotation);
                     break;
                 case 1:
                     // Spawn alternative middle grass
-                    Spawn(GrassMiddle2, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(TopSand2, new Vector3(i + offset, h, 0), rotation);
                     break;
             }
         }
@@ -211,12 +213,16 @@ public void SceneGeneration()
         {
             dirtCount--;
         }
+        
+        //Randomize platforms on the terrain
+        offset = (int) UnityEngine.Random.Range(-1f, 1f);
+        offset += GeneratePlatforms(i + offset, h);
 
-        if (lastHeight == height)
+        /*if (lastHeight == height)
         {
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h);
-        }
+        }*/
     }
 }
 
@@ -239,28 +245,28 @@ private int GeneratePlatforms(int i, int h)
             {
                 case 0:
                     // Spawn dirt edge type 1
-                    Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.identity);
+                    Spawn(BaseSand1, new Vector3(i, j, 0), Quaternion.identity);
                     break;
                 case 1:
                     // Spawn dirt edge type 2
-                    Spawn(DirtEdge2, new Vector3(i, j, 0), Quaternion.identity);
+                    Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.identity);
                     break;
             }
         }
         // Spawn the edge of the grass platform
-        Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
+        Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
 
         // Spawn the left part of the grass platform
-        Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        Spawn(SandPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
 
         for (int k = 2; k < platformWidth; k++)
         {
             // Spawn middle parts of the grass platform
-            Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            Spawn(SandPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
         }
 
         // Spawn the right part of the grass platform
-        Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        Spawn(SandPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
 
         i += gap + platformWidth + 1;
 
@@ -271,16 +277,16 @@ private int GeneratePlatforms(int i, int h)
             {
                 case 0:
                     // Spawn inverted dirt edge type 1
-                    Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    Spawn(BaseSand1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
                     break;
                 case 1:
                     // Spawn inverted dirt edge type 2
-                    Spawn(DirtEdge2, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
                     break;
             }
         }
         // Spawn the inverted edge of the grass platform
-        Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
+        Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
     }
 
     int offset = i - starting;
