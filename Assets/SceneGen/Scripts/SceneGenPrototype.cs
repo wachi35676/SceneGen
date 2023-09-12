@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using SceneGen.Scripts;
 using UnityEngine;
 using SceneGen.Scripts;
+using Unity.VisualScripting;
 using UnityEngine.Serialization; // Import the namespace where the NoiseGeneratorFactory is defined
 
 //Beach Biome, Zoya Mahboob 20i-0524
@@ -213,17 +214,104 @@ public void SceneGeneration()
         {
             dirtCount--;
         }
-        
-        //Randomize platforms on the terrain
-        offset = (int) UnityEngine.Random.Range(-1f, 1f);
-        offset += GeneratePlatforms(i + offset, h);
 
-        /*if (lastHeight == height)
+        if (lastHeight == height)
         {
-            // Generate platforms if the terrain height remains the same
-            offset += GeneratePlatforms(i + offset, h);
-        }*/
+            if (GetRandomValue() % 2 == 1)
+            {
+                offset += GeneratePlatforms(i + offset, h); //generate the platform
+                Debug.Log("Platform Generated!");
+            }
+            else
+            {
+                Debug.Log("Empty space");
+                //Leave an empty space 
+                offset += GenerateEmptySpace(i + offset, h);
+            }
+        }
+
+
+
     }
+}
+
+int GetRandomValue() {
+    float rand = UnityEngine.Random.value;
+    if (rand <= .33f)
+        return UnityEngine.Random.Range(0, 6);
+    if (rand <= .33f)
+        return UnityEngine.Random.Range(6, 9);
+    return UnityEngine.Random.Range(9, 10);
+}
+
+
+private int GenerateEmptySpace(int i, int h)
+{
+    int starting = i;
+
+    // Randomly decide whether to create a platform
+    if (UnityEngine.Random.Range(0, 100) < 10)
+    {
+        i++;
+        int gap = (int)UnityEngine.Random.Range(1, PlayerSpeed);
+        int platformWidth = UnityEngine.Random.Range(1, 10);
+        int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
+
+        for (int j = 0; j < h; j++)
+        {
+            int sandRandom = UnityEngine.Random.Range(0, 1);
+            switch (sandRandom)
+            {
+                case 0:
+                    // Spawn dirt edge type 1
+                    Spawn(BaseSand1, new Vector3(i, j, 0), Quaternion.identity);
+                    break;
+                case 1:
+                    // Spawn dirt edge type 2
+                    Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.identity);
+                    break;
+            }
+        }
+        // Spawn the edge of the grass platform
+        Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
+
+        // Spawn the left part of the grass platform
+        /*Spawn(SandPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+
+        for (int k = 2; k < platformWidth; k++)
+        {
+            // Spawn middle parts of the grass platform
+            Spawn(SandPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        }
+
+        // Spawn the right part of the grass platform
+        Spawn(SandPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        */
+
+        i += gap + platformWidth + 1;
+
+        for (int j = 0; j < h; j++)
+        {
+            int sandRandom = UnityEngine.Random.Range(0, 1);
+            switch (sandRandom)
+            {
+                case 0:
+                    // Spawn inverted dirt edge type 1
+                    Spawn(BaseSand1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    break;
+                case 1:
+                    // Spawn inverted dirt edge type 2
+                    Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    break;
+            }
+        }
+        // Spawn the inverted edge of the grass platform
+        Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
+    }
+
+    int offset = i - starting;
+    return offset;
+
 }
 
 private int GeneratePlatforms(int i, int h)
@@ -240,8 +328,8 @@ private int GeneratePlatforms(int i, int h)
 
         for (int j = 0; j < h; j++)
         {
-            int dirtRandom = UnityEngine.Random.Range(0, 1);
-            switch (dirtRandom)
+            int sandRandom = UnityEngine.Random.Range(0, 1);
+            switch (sandRandom)
             {
                 case 0:
                     // Spawn dirt edge type 1
@@ -272,8 +360,8 @@ private int GeneratePlatforms(int i, int h)
 
         for (int j = 0; j < h; j++)
         {
-            int dirtRandom = UnityEngine.Random.Range(0, 1);
-            switch (dirtRandom)
+            int sandRandom = UnityEngine.Random.Range(0, 1);
+            switch (sandRandom)
             {
                 case 0:
                     // Spawn inverted dirt edge type 1
