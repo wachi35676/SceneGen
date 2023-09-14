@@ -52,9 +52,15 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject GrassPlatformRight;
     public GameObject GrassPlatformMiddle;
     
+    [Range(0.0f, 100.0f)]
+    public float MinHeight;
+    [Range(0.0f, 100.0f)]
+    public float MaxHeight;
+    
     [Header("(Optional) Add corner grass")]
     public GameObject CornerGrass;
     public GameObject CornerGrassWide;
+    public GameObject CornerGrassHigh;
     
     [Header("Mountain")]
     public Sprite MountainSprite1;
@@ -80,7 +86,7 @@ public class SceneGenPrototype : MonoBehaviour
         SceneGeneration();
     }
 
-    void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int scale = 1)
+    void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int heightScale = 1, int widthScale = 1)
     {
         obj = Instantiate(obj, position, rotation);
 
@@ -88,7 +94,8 @@ public class SceneGenPrototype : MonoBehaviour
         var localScale = obj.transform.localScale;
 
         localScale = new Vector3(localScale.x / sprite.bounds.size.x, localScale.y / sprite.bounds.size.y, 1);
-        obj.transform.localScale = localScale * scale;
+        obj.transform.localScale = new Vector3(localScale.x * widthScale, localScale.y * heightScale, 1);
+        
 
         obj.transform.parent = transform;
     }
@@ -116,7 +123,7 @@ public void SceneGeneration()
     float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
     
     // Randomize the height scale
-    float heightScale = 5f + UnityEngine.Random.Range(-1f, 1f);
+    float heightScale = UnityEngine.Random.Range(MinHeight, MaxHeight);
 
     // Randomize the noise offset
     float noiseOffset = UnityEngine.Random.Range(-100f, 100f);
@@ -130,53 +137,50 @@ public void SceneGeneration()
     float noiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
     
     // Calculate the initial height based on noise
+    int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
+    int nextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(1, noiseOffset, noiseScale) * heightScale);
     int height = Mathf.RoundToInt(noiseValue * heightScale);
+    int lastHeight = height;
+    int lastLastHeight = height;
     
     int dirtCount = 0;
     int offset = 0;
     
     for (int i = 0; i < width; i++)
     {
-        int lastHeight = height;
+        lastLastHeight = lastHeight;
+        lastHeight = height;
+        height = nextHeight;
+        nextHeight = nextNextHeight;
         
         int h = lastHeight;
-        
+
         // Generate noise value for the current position
-        noiseValue = _noiseGenerator.GenerateNoise(i, noiseOffset, noiseScale);
+        noiseValue = _noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale);
         
         // Calculate the height based on the current noise value
-        height = Mathf.RoundToInt(noiseValue * heightScale);
-
-        if (CornerGrass != null)
+        nextNextHeight = Mathf.RoundToInt(noiseValue * heightScale);
+        
+        
+         if (CornerGrassWide != null && lastHeight == lastLastHeight && height == lastHeight + 1)
         {
-            // Handle corner grass placement
-            if (height > lastHeight)
-            {
-                // Spawn corner grass at higher terrain
-                Spawn(CornerGrass, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
-            }
-            else if (height < lastHeight)
-            {
-                // Spawn corner grass at lower terrain
-                Spawn(CornerGrass, new Vector3(i + offset + 1, height + 1, 0), Quaternion.identity);
-            }
+            // Spawn wider corner grass at higher terrain
+            Spawn(CornerGrassWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2);
+            dirtCount = 1;
         }
-        else if (CornerGrassWide != null)
+        else if (CornerGrass != null && height == lastHeight + 1)
         {
-            // Handle wider corner grass placement
-            if (height > lastHeight)
-            {
-                // Spawn wider corner grass at higher terrain
-                Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
-                dirtCount = 2;
-            }
-            else if (height < lastHeight)
-            {
-                // Spawn wider corner grass at lower terrain
-                Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) + 1f / 2f, 0), Quaternion.identity, 2);
-                dirtCount = 2;
-            }
+            // Spawn corner grass at higher terrain
+            Spawn(CornerGrass, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
+            dirtCount = 1;
         }
+        else if (CornerGrassHigh != null && height == lastHeight + 2)
+        {
+            // Spawn corner grass at higher terrain
+            Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
+            dirtCount = 1;
+        }
+            
 
         for (int j = 0; j < lastHeight; j++)
         {
@@ -204,6 +208,7 @@ public void SceneGeneration()
         else
         {
             dirtCount--;
+            Spawn(Dirt, new Vector3(i + offset, h, 0), rotation);
         }
 
         if (lastHeight == height)
