@@ -58,6 +58,9 @@ public class SceneGenPrototype : MonoBehaviour
     [Header("(Optional) Add corner grass")]
     public GameObject CornerSand;
     public GameObject CornerSandWide;
+
+    [Header("Water For Beach")]  
+    public GameObject Water;
     
     /*[Header("Mountain")]
     public Sprite MountainSprite1;
@@ -77,6 +80,8 @@ public class SceneGenPrototype : MonoBehaviour
 
     private INoiseGenerator _noiseGenerator;
     
+    
+    //Function that generates scenes. First clears the scene then calls the scene generation function
     public void Generate()
     {
         Clear();
@@ -88,7 +93,9 @@ public class SceneGenPrototype : MonoBehaviour
     {
         obj = Instantiate(obj, position, rotation);
 
+        //Obtaining the sprite for the object
         Sprite sprite = obj.GetComponent<SpriteRenderer>().sprite;
+        //Scaling the asset to fit the requirements
         var localScale = obj.transform.localScale;
 
         localScale = new Vector3(localScale.x / sprite.bounds.size.x, localScale.y / sprite.bounds.size.y, 1);
@@ -100,24 +107,26 @@ public class SceneGenPrototype : MonoBehaviour
     //Picking the children and destroying them all
     public void Clear()
     {
+        //Making a list of the children that are on the scene
         List<Transform> children = new List<Transform>();
         foreach (Transform child in transform)
         {
             children.Add(child);
         }
 
+        //Destroying/deleting the children in the list
         for (int i = 0; i < children.Count; i++)
         {
             DestroyImmediate(children[i].gameObject);
         }
     }
     
- //   
+ //Generating the scene   
 public void SceneGeneration()
 {
     // Generate a random width for the biome
     float width = UnityEngine.Random.Range(MinBiomeSize, MaxBiomeSize);
-
+    
     // Randomize the noise scale
     float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
     
@@ -126,12 +135,12 @@ public void SceneGeneration()
     //float heightScale = 2f + UnityEngine.Random.Range(-1f, 1f);
 
     // Randomize the noise offset
-    float noiseOffset = UnityEngine.Random.Range(-100f, 100f);
+    float noiseOffset = UnityEngine.Random.Range(-100f, 100f); //is the offset before a new sprite is added
 
     // Initialize a noise generator based on NoiseType
     INoiseGenerator _noiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
     
-    Quaternion rotation;
+    Quaternion rotation; //Determines the rotation of game objects
 
     // Generate noise value for the initial position
     float noiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
@@ -139,13 +148,16 @@ public void SceneGeneration()
     // Calculate the initial height based on noise
     int height = Mathf.RoundToInt(noiseValue * heightScale);
     
-    int dirtCount = 0;
-    int offset = 0;
+    int dirtCount = 0; //length for which we want to place dirt objects
+    int offset = 0; //gap between platforms
     
+    //For the min to max width of the biome, start placing textures
     for (int i = 0; i < width; i++)
     {
+        //Initialized with the desired height for the biome
         int lastHeight = height;
         
+        //Used to determine the current height
         int h = lastHeight;
         
         // Generate noise value for the current position
@@ -154,11 +166,12 @@ public void SceneGeneration()
         // Calculate the height based on the current noise value
         height = Mathf.RoundToInt(noiseValue * heightScale);
 
+        //In case a sprite has been assigned to the game object, add the object to the scene
         if (CornerSand != null)
         {
-            
             //Determining the height of the previous platform to generate the next platform
             // Handle corner grass placement
+            //If the current height is more than the last height then spawn the corner at a higher point
             if (height > lastHeight)
             {
                 // Spawn corner grass at higher terrain
@@ -186,7 +199,8 @@ public void SceneGeneration()
                 dirtCount = 2;
             }
         }
-
+        
+        //Placing the basse sands randomly
         for (int j = 0; j < lastHeight; j++)
         {
             // Randomly rotate the dirt objects in 90-degree increments
@@ -195,6 +209,8 @@ public void SceneGeneration()
         }
         
         rotation = Quaternion.identity;
+        
+        //Dirt count is the length for which to placeo objects
         if (dirtCount == 0)
         {
             int grassRandom = UnityEngine.Random.Range(0, 1);
@@ -214,10 +230,11 @@ public void SceneGeneration()
         {
             dirtCount--;
         }
-
+        
+        //Introducing empty space and floating platforms
         if (lastHeight == height)
         {
-            if (GetRandomValue() % 2 == 1)
+            if (GetRandomValue() % 2 == 0)
             {
                 offset += GeneratePlatforms(i + offset, h); //generate the platform
                 Debug.Log("Platform Generated!");
@@ -227,6 +244,8 @@ public void SceneGeneration()
                 Debug.Log("Empty space");
                 //Leave an empty space 
                 offset += GenerateEmptySpace(i + offset, h);
+                
+                Spawn(Water,new Vector3(i+offset, h),rotation);
             }
         }
 
@@ -235,6 +254,7 @@ public void SceneGeneration()
     }
 }
 
+//Randomization function for spawning terrain
 int GetRandomValue() {
     float rand = UnityEngine.Random.value;
     if (rand <= .33f)
@@ -244,7 +264,7 @@ int GetRandomValue() {
     return UnityEngine.Random.Range(9, 10);
 }
 
-
+//Function for generating space
 private int GenerateEmptySpace(int i, int h)
 {
     int starting = i;
@@ -328,6 +348,7 @@ private int GeneratePlatforms(int i, int h)
 
         for (int j = 0; j < h; j++)
         {
+            
             int sandRandom = UnityEngine.Random.Range(0, 1);
             switch (sandRandom)
             {
@@ -343,38 +364,46 @@ private int GeneratePlatforms(int i, int h)
         }
         // Spawn the edge of the grass platform
         Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
+        
 
         // Spawn the left part of the grass platform
         Spawn(SandPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            
 
         for (int k = 2; k < platformWidth; k++)
         {
             // Spawn middle parts of the grass platform
             Spawn(SandPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            
         }
 
         // Spawn the right part of the grass platform
         Spawn(SandPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        
 
         i += gap + platformWidth + 1;
 
         for (int j = 0; j < h; j++)
         {
+            
             int sandRandom = UnityEngine.Random.Range(0, 1);
             switch (sandRandom)
             {
                 case 0:
                     // Spawn inverted dirt edge type 1
                     Spawn(BaseSand1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    
                     break;
                 case 1:
                     // Spawn inverted dirt edge type 2
                     Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
+                    
                     break;
             }
         }
         // Spawn the inverted edge of the grass platform
         Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
+        
     }
 
     int offset = i - starting;
