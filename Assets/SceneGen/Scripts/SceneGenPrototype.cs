@@ -151,7 +151,111 @@ public void SceneGeneration()
     int dirtCount = 0; //length for which we want to place dirt objects
     int offset = 0; //gap between platforms
     
+    
+
     //For the min to max width of the biome, start placing textures
+    for (int i = 0; i < width; i++)
+    {
+        
+        //Initialized with the desired height for the biome
+        int lastHeight = height;
+        
+        //Used to determine the current height
+        int h = lastHeight;
+        
+        // Generate noise value for the current position
+        noiseValue = _noiseGenerator.GenerateNoise(i, noiseOffset, noiseScale);
+        
+        // Calculate the height based on the current noise value
+        height = Mathf.RoundToInt(noiseValue * heightScale);
+
+        //In case a sprite has been assigned to the game object, add the object to the scene
+        if (CornerSand != null)
+        {
+            //Determining the height of the previous platform to generate the next platform
+            // Handle corner grass placement
+            //If the current height is more than the last height then spawn the corner at a higher point
+            if (height > lastHeight)
+            {
+                // Spawn corner grass at higher terrain
+                Spawn(CornerSand, new Vector3(i + offset, height, 0), Quaternion.Euler(180, 0, 180));
+            }
+            else if (height < lastHeight)
+            {
+                // Spawn corner grass at lower terrain
+                Spawn(CornerSand, new Vector3(i + offset + 1, height + 1, 0), Quaternion.identity);
+            }
+        }
+        else if (CornerSandWide != null)
+        {
+            // Handle wider corner grass placement
+            if (height > lastHeight)
+            {
+                // Spawn wider corner grass at higher terrain
+                Spawn(CornerSandWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
+                dirtCount = 2;
+            }
+            else if (height < lastHeight)
+            {
+                // Spawn wider corner grass at lower terrain
+                Spawn(CornerSandWide, new Vector3((i + offset) + 1f / 2f, (height) + 1f / 2f, 0), Quaternion.identity, 2);
+                dirtCount = 2;
+            }
+        }
+        
+        //Placing the basse sands randomly
+        for (int j = 0; j < lastHeight; j++)
+        {
+            // Randomly rotate the dirt objects in 90-degree increments
+            rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
+            Spawn(BaseSand, new Vector3(i + offset, j, 0), rotation);
+        }
+        
+        rotation = Quaternion.identity;
+        
+        //Dirt count is the length for which to placeo objects
+        if (dirtCount == 0)
+        {
+            int grassRandom = UnityEngine.Random.Range(0, 1);
+            switch (grassRandom)
+            {
+                case 0:
+                    // Spawn middle grass
+                    Spawn(TopSand, new Vector3(i + offset, h, 0), rotation);
+                    break;
+                case 1:
+                    // Spawn alternative middle grass
+                    Spawn(TopSand2, new Vector3(i + offset, h, 0), rotation);
+                    break;
+            }
+        }
+        else
+        {
+            dirtCount--;
+        }
+        
+        //Introducing empty space and floating platforms
+        if (lastHeight == height)
+        {
+            if (GetRandomValue() % 2 == 0)
+            {
+                offset += GeneratePlatforms(i + offset, h); //generate the platform
+                Debug.Log("Platform Generated!");
+            }
+            else
+            {
+                Debug.Log("Empty space");
+                //Leave an empty space 
+                offset += GenerateEmptySpace(i + offset, h);
+                
+                //Spawn(Water,new Vector3(i+offset, h),rotation);
+            }
+        }
+
+
+
+    }
+    //Placing water before scene
     for (int i = 0; i < width; i++)
     {
         //Initialized with the desired height for the biome
@@ -245,12 +349,10 @@ public void SceneGeneration()
                 //Leave an empty space 
                 offset += GenerateEmptySpace(i + offset, h);
                 
-                Spawn(Water,new Vector3(i+offset, h),rotation);
+                //Spawn(Water,new Vector3(i+offset, h),rotation);
             }
         }
-
-
-
+        //Spawn(Water,new Vector3(i+offset, height, 1),Quaternion.Euler(180,0,-1));
     }
 }
 
@@ -272,11 +374,13 @@ private int GenerateEmptySpace(int i, int h)
     // Randomly decide whether to create a platform
     if (UnityEngine.Random.Range(0, 100) < 10)
     {
-        i++;
-        int gap = (int)UnityEngine.Random.Range(1, PlayerSpeed);
-        int platformWidth = UnityEngine.Random.Range(1, 10);
-        int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
+        i++; //for the offset
+        int gap = (int)UnityEngine.Random.Range(1, PlayerSpeed); //how big a gap is
+        int platformWidth = UnityEngine.Random.Range(1, 10); //width of the platform
+        int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);//at what height the platform will be
 
+        //Sand is being spawned inside the for loop
+        //Two types for variability
         for (int j = 0; j < h; j++)
         {
             int sandRandom = UnityEngine.Random.Range(0, 1);
@@ -289,27 +393,33 @@ private int GenerateEmptySpace(int i, int h)
                 case 1:
                     // Spawn dirt edge type 2
                     Spawn(BaseSand2, new Vector3(i, j, 0), Quaternion.identity);
+                    
                     break;
             }
         }
+        //Edge of the platform is spawned
         // Spawn the edge of the grass platform
         Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
+        
 
+        //X stays the same, y is changed. Gap is start of platform and end of platform
+        
         // Spawn the left part of the grass platform
-        /*Spawn(SandPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+        Spawn(Water, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
 
         for (int k = 2; k < platformWidth; k++)
         {
             // Spawn middle parts of the grass platform
-            Spawn(SandPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            Spawn(Water, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
         }
 
         // Spawn the right part of the grass platform
-        Spawn(SandPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
-        */
+        Spawn(Water, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
 
-        i += gap + platformWidth + 1;
-
+        i += gap + platformWidth + 1; //
+        
+        
+        //For the opposite side of the platform
         for (int j = 0; j < h; j++)
         {
             int sandRandom = UnityEngine.Random.Range(0, 1);
@@ -329,7 +439,7 @@ private int GenerateEmptySpace(int i, int h)
         Spawn(SandPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
     }
 
-    int offset = i - starting;
+    int offset = i - starting; //calculate all the offsets
     return offset;
 
 }
