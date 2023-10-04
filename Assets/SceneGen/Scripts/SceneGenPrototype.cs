@@ -45,6 +45,11 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject CornerGrassWide;
     public GameObject CornerGrassHigh;
 
+    [Header("(Optional) Water")]
+    public GameObject Water;
+    [Range(0.0f, 20.0f)]
+    public float WaterHeight;
+    
     private INoiseGenerator _noiseGenerator;
     
     public void Generate()
@@ -208,6 +213,22 @@ public void SceneGeneration()
         {
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h);
+        }
+    }
+
+    if (Water != null)
+    {
+        GenerateWater((int)width + offset, (int)WaterHeight);
+    }
+}
+
+private void GenerateWater(int width, int height)
+{
+    for (int i = 0; i < width; i++)
+    {
+        for (int j = 0; j < height; j++)
+        {
+            Spawn(Water, new Vector3(i, j, 0), Quaternion.identity, 1 , 1, -1);
         }
     }
 }
