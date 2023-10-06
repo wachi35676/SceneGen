@@ -49,6 +49,14 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject Water;
     [Range(0.0f, 20.0f)]
     public float WaterHeight;
+    public GameObject WaterBody;
+
+    [Header("(Optional) Cave")]
+    public int CaveCount;
+    public GameObject Cave;
+    [Range(0, 20)]
+    public float CaveHeight;
+    public float CaveScale;
     
     private INoiseGenerator _noiseGenerator;
     
@@ -95,7 +103,6 @@ public void SceneGeneration()
     // Randomize the noise scale
     float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
     
-    // Randomize the height scale
     float heightScale = Height;
 
     // Randomize the noise offset
@@ -109,13 +116,17 @@ public void SceneGeneration()
     // Generate noise value for the initial position
     float noiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
     
+    float caveNoiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
+    float caveHeightScale = CaveHeight;
+    float caveNoiseOffset = UnityEngine.Random.Range(-100f, 100f);
+    
     // Calculate the initial height based on noise
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
     int nextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(1, noiseOffset, noiseScale) * heightScale);
     int height = Mathf.RoundToInt(noiseValue * heightScale);
     int lastHeight = height;
     int lastLastHeight = height;
-    
+
     int dirtCount = 0;
     int offset = 0;
     
@@ -187,6 +198,27 @@ public void SceneGeneration()
             Spawn(Dirt, new Vector3(i + offset, j, 0), rotation);
         }
         
+        if (Cave != null)
+        {
+            INoiseGenerator _caveNoiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
+        
+            float caveNoiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
+        
+            int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
+
+            caveNoiseValue = _caveNoiseGenerator.GenerateNoise(i, caveNoiseOffset, caveNoiseScale);
+            heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
+
+            if (heightCave <= height)
+            {
+                for (int j = heightCave; j <= height && j < heightCave + CaveScale; j++)
+                {
+                    Spawn(Cave, new Vector3(i + offset + 1, j, 0), Quaternion.identity, 1, 1, 2);
+                }
+            }
+
+        }
+        
         rotation = Quaternion.identity;
         if (dirtCount == 0)
         {
@@ -228,8 +260,9 @@ private void GenerateWater(int width, int height)
     {
         for (int j = 0; j < height; j++)
         {
-            Spawn(Water, new Vector3(i, j, 0), Quaternion.identity, 1 , 1, -1);
+            Spawn(WaterBody, new Vector3(i, j, 0), Quaternion.identity, 1 , 1, -1);
         }
+        Spawn(Water, new Vector3(i, height, 0), Quaternion.identity, 1 , 1, -1);
     }
 }
 
