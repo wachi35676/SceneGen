@@ -79,6 +79,8 @@ public class SceneGenPrototype : MonoBehaviour
         obj.transform.localScale = new Vector3(localScale.x * widthScale, localScale.y * heightScale, 1);
 
         obj.transform.parent = transform;
+        
+        
     }
 
     
