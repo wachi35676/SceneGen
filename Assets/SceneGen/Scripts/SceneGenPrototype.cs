@@ -128,6 +128,8 @@ public void SceneGeneration()
     int height = Mathf.RoundToInt(noiseValue * heightScale);
     int lastHeight = height;
     int lastLastHeight = height;
+    
+    
 
     int dirtCount = 0;
     int offset = 0;
