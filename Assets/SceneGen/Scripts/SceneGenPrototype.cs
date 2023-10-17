@@ -125,9 +125,10 @@ public void SceneGeneration()
     // Calculate the initial height based on noise
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
     int nextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(1, noiseOffset, noiseScale) * heightScale);
-    int height = Mathf.RoundToInt(noiseValue * heightScale);
+    int height =  Mathf.RoundToInt(noiseValue * heightScale);
     int lastHeight = height;
     int lastLastHeight = height;
+    
     
     
 
