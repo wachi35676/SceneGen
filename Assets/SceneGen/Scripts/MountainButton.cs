@@ -1,17 +1,18 @@
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEditor;
 
-[CustomEditor(typeof(SceneGenPrototype))]
-public class SceneGenerator : Editor
+[CustomEditor(typeof(Mountains))]
+public class MountainButton : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector() ;
-        SceneGenPrototype myScript = (SceneGenPrototype)target;
+        Mountains myScript = (Mountains)target;
+        
         if (GUILayout.Button("Generate"))
         {
-            myScript.Generate();
+            myScript.GenerateMountains();
         }
         if (GUILayout.Button("Clear"))
         {
