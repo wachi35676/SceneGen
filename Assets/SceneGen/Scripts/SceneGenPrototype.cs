@@ -174,6 +174,7 @@ public void SceneGeneration()
             h--;
             h--;
             h--;
+            //Trying to spawn it somewhere else
         }
             
         if (CornerGrassWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
