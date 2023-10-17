@@ -126,7 +126,7 @@ public void SceneGeneration()
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
     int nextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(1, noiseOffset, noiseScale) * heightScale);
     int height = Mathf.RoundToInt(noiseValue * heightScale);
-    int lastHeight = height;
+    int prevHeight = height;
     int lastLastHeight = height;
     
     
@@ -136,8 +136,8 @@ public void SceneGeneration()
     
     for (int i = 0; i < width; i++)
     {
-        lastLastHeight = lastHeight;
-        lastHeight = height;
+        lastLastHeight = prevHeight;
+        prevHeight = height;
         height = nextHeight;
         nextHeight = nextNextHeight;
         
@@ -150,14 +150,14 @@ public void SceneGeneration()
         nextNextHeight = Mathf.RoundToInt(noiseValue * heightScale);
         
         
-        if (CornerGrassWide != null && lastHeight == lastLastHeight && height == lastHeight + 1)
+        if (CornerGrassWide != null && prevHeight == lastLastHeight && height == prevHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
             Spawn(CornerGrassWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2, 1);
             dirtCount = 1;
             h--;
         }
-        else if (CornerGrass != null && height == lastHeight + 1)
+        else if (CornerGrass != null && height == prevHeight + 1)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerGrass, new Vector3(i + offset, height - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
@@ -165,7 +165,7 @@ public void SceneGeneration()
             h--;
             h--;
         }
-        else if (CornerGrassHigh != null && height == lastHeight + 2)
+        else if (CornerGrassHigh != null && height == prevHeight + 2)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
@@ -195,7 +195,7 @@ public void SceneGeneration()
             h--;
         }
         
-        for (int j = 0; j < lastHeight; j++)
+        for (int j = 0; j < prevHeight; j++)
         {
             // Randomly rotate the dirt objects in 90-degree increments
             rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
@@ -245,7 +245,7 @@ public void SceneGeneration()
             Spawn(Dirt, new Vector3(i + offset, h, 0), rotation);
         }
 
-        if (lastHeight == height)
+        if (prevHeight == height)
         {
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h);
