@@ -142,7 +142,7 @@ public void SceneGeneration()
         height = nextHeight;
         nextHeight = nextNextHeight;
         
-        int h = height;
+        int currentHeight = height;
 
         // Generate noise value for the current position
         noiseValue = _noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale);
@@ -156,24 +156,24 @@ public void SceneGeneration()
             // Spawn wider corner grass at higher terrain
             Spawn(CornerGrassWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2, 1);
             dirtCount = 1;
-            h--;
+            currentHeight--;
         }
         else if (CornerGrass != null && height == lastHeight + 1)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerGrass, new Vector3(i + offset, height - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
             dirtCount = 1;
-            h--;
-            h--;
+            currentHeight--;
+            currentHeight--;
         }
         else if (CornerGrassHigh != null && height == lastHeight + 2)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
             dirtCount = 1;
-            h--;
-            h--;
-            h--;
+            currentHeight--;
+            currentHeight--;
+            currentHeight--;
             //Trying to spawn it somewhere else
         }
             
@@ -192,9 +192,9 @@ public void SceneGeneration()
             // Spawn corner grass at higher terrain
             Spawn(CornerGrassHigh, new Vector3(i + offset + 1, height - 1, 0), Quaternion.identity, 3, 1, 1);
             dirtCount = 1;
-            h--;
-            h--;
-            h--;
+            currentHeight--;
+            currentHeight--;
+            currentHeight--;
         }
         
         for (int j = 0; j < lastHeight; j++)
@@ -233,24 +233,24 @@ public void SceneGeneration()
             {
                 case 0:
                     // Spawn middle grass
-                    Spawn(GrassMiddle, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(GrassMiddle, new Vector3(i + offset, currentHeight, 0), rotation);
                     break;
                 case 1:
                     // Spawn alternative middle grass
-                    Spawn(GrassMiddle2, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(GrassMiddle2, new Vector3(i + offset, currentHeight, 0), rotation);
                     break;
             }
         }
         else
         {
             dirtCount--;
-            Spawn(Dirt, new Vector3(i + offset, h, 0), rotation);
+            Spawn(Dirt, new Vector3(i + offset, currentHeight, 0), rotation);
         }
 
         if (lastHeight == height)
         {
             // Generate platforms if the terrain height remains the same
-            offset += GeneratePlatforms(i + offset, h);
+            offset += GeneratePlatforms(i + offset, currentHeight);
         }
     }
 
