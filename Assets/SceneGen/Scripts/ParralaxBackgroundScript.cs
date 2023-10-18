@@ -5,13 +5,13 @@ using UnityEngine;
 
 public class ParralaxBackgroundScript : MonoBehaviour
 {
-    private float length, startPos;
+    private float length, startPosition;
     public GameObject cam;
     public float parallaxEffect;
     
     void Start()
     {
-        startPos = transform.position.x;
+        startPosition = transform.position.x;
         length = GetComponent<SpriteRenderer>().bounds.size.x;
     }
 
@@ -20,13 +20,13 @@ public class ParralaxBackgroundScript : MonoBehaviour
         float temp = (cam.transform.position.x * (1 - parallaxEffect));
         float dist = (cam.transform.position.x * parallaxEffect);
         
-        transform.position = new Vector3(startPos + dist, transform.position.y, transform.position.z);
-        if (temp > startPos + length)
+        transform.position = new Vector3(startPosition + dist, transform.position.y, transform.position.z);
+        if (temp > startPosition + length)
         {
-            startPos += length;
-        } else if (temp < startPos - length)
+            startPosition += length;
+        } else if (temp < startPosition - length)
         {
-            startPos -= length;
+            startPosition -= length;
         }
     }
 }
