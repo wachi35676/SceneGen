@@ -18,22 +18,23 @@ public class Mountains : MonoBehaviour
     public void GenerateMountains()
     {
         List<int> gapStartIndices = new List<int>();
-        while (gapStartIndices.Count < numberOfGaps)
+        for (int i = 0; i < numberOfGaps; i++)
         {
-            int gapStartIndex = Random.Range(1, width - maxGapWidth - 1); // Subtract 1 from width - maxGapWidth
-            if (!gapStartIndices.Contains(gapStartIndex))
+            int gapStartIndex;
+            do
             {
-                gapStartIndices.Add(gapStartIndex);
-            }
+                gapStartIndex = Random.Range(1, width - maxGapWidth - 1); // Subtract 1 from width - maxGapWidth
+            } while (gapStartIndices.Contains(gapStartIndex));
+            gapStartIndices.Add(gapStartIndex);
         }
 
         for (int x = 0; x < width; x++)
         {
             int minHeight = height - 1;
             int maxHeight = height + 2;
-            height = Random.Range(minHeight, maxHeight);
-            int minStoneSpawnDistance = height - minStoneHeight;
-            int maxStoneSpawnDistance = height - maxStoneHeight;
+            int newHeight = Random.Range(minHeight, maxHeight);
+            int minStoneSpawnDistance = newHeight - minStoneHeight;
+            int maxStoneSpawnDistance = newHeight - maxStoneHeight;
             int totalStoneSpawnDistance = Random.Range(minStoneSpawnDistance, maxStoneSpawnDistance);
 
             if (gapStartIndices.Contains(x))
@@ -48,16 +49,18 @@ public class Mountains : MonoBehaviour
                     {
                         for (int i = platformStartX; i < platformStartX + platformWidth; i++) // Use < instead of <=
                         {
-                            spawnObj(dirt, i, height);
+                            spawnObj(dirt, i, newHeight);
                         }
                     }
+
+                    x += gapWidth - 1;
+                    continue;
                 }
 
-                x += gapWidth - 1;
-                continue;
+                height = newHeight;
             }
 
-            for (int y = 0; y < height; y++)
+            for (int y = 0; y < newHeight; y++)
             {
                 if (y < totalStoneSpawnDistance)
                 {
@@ -69,16 +72,17 @@ public class Mountains : MonoBehaviour
                 }
             }
 
-            if (totalStoneSpawnDistance == height)
+            if (totalStoneSpawnDistance == newHeight)
             {
-                spawnObj(stone, x, height);
+                spawnObj(stone, x, newHeight);
             }
             else
             {
-                spawnObj(grass, x, height);
+                spawnObj(grass, x, newHeight);
             }
         }
     }
+
 
     void spawnObj(GameObject obj, int width, int height)
     {
