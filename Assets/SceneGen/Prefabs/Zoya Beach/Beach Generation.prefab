@@ -62,6 +62,7 @@ MonoBehaviour:
   CornerGrass: {fileID: 3375560545676859587, guid: 141a1164478d2d04b94db500ed908637, type: 3}
   CornerGrassWide: {fileID: 3375560545676859587, guid: 2e1715177ee1e0442ab359de3e7f92e4, type: 3}
   CornerGrassHigh: {fileID: 0}
+  Bridge: {fileID: 3375560545676859587, guid: 26b6096975cf25c40a239bb79a6b4a05, type: 3}
   Water: {fileID: 6005075474364196977, guid: d2c4d64ab01a6af4d94ca2b4f825f7d4, type: 3}
   WaterHeight: 0.8
   WaterBody: {fileID: 6005075474364196977, guid: 9d63247db898eff4ab1e53a26789442a, type: 3}

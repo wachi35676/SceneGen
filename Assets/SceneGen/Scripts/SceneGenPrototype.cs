@@ -303,7 +303,10 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         // Spawn the edge of the grass platform
         Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
         
-        if (!isBridge)
+        //generate a random number 1 or 0
+        int bridgeRandom = UnityEngine.Random.Range(0, 2);
+
+        if (!isBridge || bridgeRandom == 0)
         {
             int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
 
@@ -322,10 +325,10 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         }
         else
         {
-            for (int k = 0; k < gap + platformWidth + 1; k++)
+            for (int k = 0; k <= gap + platformWidth + 1; k++)
             {
                 // Spawn middle parts of the grass platform
-                Spawn(Bridge, new Vector3(i+k, h , 0), Quaternion.identity, 1, 1, 0);
+                Spawn(Bridge, new Vector3(i+k, h , 0), Quaternion.identity, 1, 1, -1);
             }
         }
 

@@ -15,7 +15,7 @@ public class ParralaxBackgroundScript : MonoBehaviour
         length = GetComponent<SpriteRenderer>().bounds.size.x;
     }
 
-    private void FixedUpdate()
+    private void Update()
     {
         float temp = (cam.transform.position.x * (1 - parallaxEffect));
         float dist = (cam.transform.position.x * parallaxEffect);
@@ -23,10 +23,10 @@ public class ParralaxBackgroundScript : MonoBehaviour
         transform.position = new Vector3(startPosition + dist, transform.position.y, transform.position.z);
         if (temp > startPosition + length)
         {
-            startPosition += length;
+            startPosition += 2 * length;
         } else if (temp < startPosition - length)
         {
-            startPosition -= length;
+            startPosition -= 2 * length;
         }
     }
 }
