@@ -44,6 +44,9 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject CornerGrass;
     public GameObject CornerGrassWide;
     public GameObject CornerGrassHigh;
+    
+    [Header("(Optional) Add Bridge")]
+    public GameObject Bridge;
 
     [Header("(Optional) Water")]
     public GameObject Water;
@@ -248,7 +251,7 @@ public void SceneGeneration()
         if (prevHeight == height)
         {
             // Generate platforms if the terrain height remains the same
-            offset += GeneratePlatforms(i + offset, h);
+            offset += GeneratePlatforms(i + offset, h, Bridge != null);
         }
     }
 
@@ -270,7 +273,7 @@ private void GenerateWater(int width, int height)
     }
 }
 
-private int GeneratePlatforms(int i, int h)
+private int GeneratePlatforms(int i, int h, bool isBridge = false)
 {
     int starting = i;
 
@@ -280,7 +283,6 @@ private int GeneratePlatforms(int i, int h)
         i++;
         int gap = (int)UnityEngine.Random.Range(1, PlayerSpeed);
         int platformWidth = UnityEngine.Random.Range(1, 10);
-        int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
 
         for (int j = 0; j < h; j++)
         {
@@ -297,20 +299,35 @@ private int GeneratePlatforms(int i, int h)
                     break;
             }
         }
+
         // Spawn the edge of the grass platform
         Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
-
-        // Spawn the left part of the grass platform
-        Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
-
-        for (int k = 2; k < platformWidth; k++)
+        
+        if (!isBridge)
         {
-            // Spawn middle parts of the grass platform
-            Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
-        }
+            int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
 
-        // Spawn the right part of the grass platform
-        Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            // Spawn the left part of the grass platform
+            Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+
+            for (int k = 2; k < platformWidth; k++)
+            {
+                // Spawn middle parts of the grass platform
+                Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+            }
+
+            // Spawn the right part of the grass platform
+            Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0),
+                Quaternion.identity);
+        }
+        else
+        {
+            for (int k = 0; k < gap + platformWidth + 1; k++)
+            {
+                // Spawn middle parts of the grass platform
+                Spawn(Bridge, new Vector3(i+k, h , 0), Quaternion.identity, 1, 1, 0);
+            }
+        }
 
         i += gap + platformWidth + 1;
 
