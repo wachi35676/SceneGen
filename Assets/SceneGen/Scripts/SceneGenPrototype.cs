@@ -204,13 +204,14 @@ public void SceneGeneration()
             rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
             Spawn(Dirt, new Vector3(i + offset, j, 0), rotation);
         }
+       
         
-        if (Cave != null)
+     if (Cave != null)
         {
             INoiseGenerator _caveNoiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
-        
+
             float caveNoiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
-        
+
             int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
 
             caveNoiseValue = _caveNoiseGenerator.GenerateNoise(i, caveNoiseOffset, caveNoiseScale);
@@ -220,10 +221,20 @@ public void SceneGeneration()
             {
                 for (int j = heightCave; j <= height && j < heightCave + CaveScale; j++)
                 {
+                    // Spawn cave game object
                     Spawn(Cave, new Vector3(i + offset + 1, j, 0), Quaternion.identity, 1, 1, 2);
                 }
             }
 
+            // Check if this is an entry or exit point for the cave
+            if (i == 0 || i == width - 1)
+            {
+                // Generate a straight vertical line of cave entry/exit
+                for (int k = heightCave; k <= height; k++)
+                {
+                    Spawn(Cave, new Vector3(i + offset + 1, k, 0), Quaternion.identity, 1, 1, 2);
+                }
+            }
         }
         
         rotation = Quaternion.identity;
