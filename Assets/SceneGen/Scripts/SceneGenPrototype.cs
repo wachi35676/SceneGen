@@ -57,6 +57,7 @@ public class SceneGenPrototype : MonoBehaviour
     [Header("(Optional) Cave")]
     public int CaveCount;
     public GameObject Cave;
+    public GameObject CaveCorner;
     [Range(0, 20)]
     public float CaveHeight;
     public float CaveScale;
@@ -69,7 +70,7 @@ public class SceneGenPrototype : MonoBehaviour
         SceneGeneration();
     }
 
-    void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int heightScale = 1, int widthScale = 1, int orderInLayer = 0)
+    void Spawn(GameObject obj, Vector3 position, Quaternion rotation, int heightScale = 1, int widthScale = 1, int orderInLayer = 0, bool toMask = false)
     {
         obj = Instantiate(obj, position, rotation);
         obj.GetComponent<SpriteRenderer>().sortingOrder = orderInLayer;
@@ -82,8 +83,29 @@ public class SceneGenPrototype : MonoBehaviour
         obj.transform.localScale = new Vector3(localScale.x * widthScale, localScale.y * heightScale, 1);
 
         obj.transform.parent = transform;
-        
-        
+
+        if (Cave != null)
+        {
+            if (toMask)
+            {
+                obj.GetComponent<SpriteRenderer>().maskInteraction = SpriteMaskInteraction.VisibleInsideMask;
+            }
+            else
+            {
+                //make a new game object
+                GameObject mask = new GameObject();
+                //add a sprite mask component to it
+                SpriteMask maskComponent = mask.AddComponent<SpriteMask>();
+                //set the mask component to the sprite renderer of the object
+                maskComponent.sprite = obj.GetComponent<SpriteRenderer>().sprite;
+                mask.transform.position = obj.transform.position;
+                mask.transform.localScale = obj.transform.localScale;
+                mask.transform.rotation = obj.transform.rotation;
+
+                mask.transform.parent = obj.transform;
+            }
+        }
+
     }
 
     
@@ -100,6 +122,8 @@ public class SceneGenPrototype : MonoBehaviour
             DestroyImmediate(children[i].gameObject);
         }
     }
+    
+    
 public void SceneGeneration()
 {
     // Generate a random width for the biome
@@ -117,21 +141,21 @@ public void SceneGeneration()
     INoiseGenerator _noiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
     
     Quaternion rotation;
-
-    // Generate noise value for the initial position
-    float noiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
     
+    INoiseGenerator _caveNoiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType.PerlinNoise);
+    _caveNoiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType.PerlinNoise);
+    float caveNoiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
     float caveNoiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
     float caveHeightScale = CaveHeight;
     float caveNoiseOffset = UnityEngine.Random.Range(-100f, 100f);
+    int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
     
     // Calculate the initial height based on noise
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
     int nextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(1, noiseOffset, noiseScale) * heightScale);
-    int height = Mathf.RoundToInt(noiseValue * heightScale);
+    int height = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale) * heightScale);
     int prevHeight = height;
     int lastLastHeight = height;
-    
     
 
     int dirtCount = 0;
@@ -145,12 +169,9 @@ public void SceneGeneration()
         nextHeight = nextNextHeight;
         
         int h = height;
-
-        // Generate noise value for the current position
-        noiseValue = _noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale);
         
         // Calculate the height based on the current noise value
-        nextNextHeight = Mathf.RoundToInt(noiseValue * heightScale);
+        nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale) * heightScale);
         
         
         if (CornerGrassWide != null && prevHeight == lastLastHeight && height == prevHeight + 1)
@@ -178,66 +199,86 @@ public void SceneGeneration()
             h--;
         }
             
-        if (CornerGrassWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
+        else if (CornerGrassWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
-            Spawn(CornerGrassWide, new Vector3((i + offset) + 3f / 2f, (height) - 1f / 2f, 0), Quaternion.identity, 2, 2, 1);
+            Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.identity, 2, 2, 1);
+            dirtCount = 1;
+            h--;
         }
         else if (CornerGrass != null && height == nextHeight + 1)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrass, new Vector3(i + offset + 1 , height - 1f / 2f, 0), Quaternion.identity, 2, 1, 1);
+            Spawn(CornerGrass, new Vector3(i + offset , height - 1f / 2f, 0), Quaternion.identity, 2, 1, 1);
+            dirtCount = 1;
+            h--;
+            h--;
+            
         }
         else if (CornerGrassHigh != null && height == nextHeight + 2)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrassHigh, new Vector3(i + offset + 1, height - 1, 0), Quaternion.identity, 3, 1, 1);
+            Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.identity, 3, 1, 1);
             dirtCount = 1;
             h--;
             h--;
             h--;
         }
         
-        for (int j = 0; j < prevHeight; j++)
+        for (int j = 0; j < h; j++)
         {
-            // Randomly rotate the dirt objects in 90-degree increments
-            rotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(0, 4) * 90);
-            Spawn(Dirt, new Vector3(i + offset, j, 0), rotation);
+            Spawn(Dirt, new Vector3(i + offset, j, 0), Quaternion.identity);
         }
        
         
-     if (Cave != null)
+        if (Cave != null)
         {
-            INoiseGenerator _caveNoiseGenerator = NoiseGeneratorFactory.InitializeAndGetNoiseGenerator(NoiseType);
-
-            float caveNoiseValue = _noiseGenerator.GenerateNoise(0, noiseOffset, noiseScale);
-
-            int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
-
             caveNoiseValue = _caveNoiseGenerator.GenerateNoise(i, caveNoiseOffset, caveNoiseScale);
             heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
 
-            if (heightCave <= height)
+            
+            for (int j = heightCave; j <= height && j < heightCave + CaveScale; j++)
             {
-                for (int j = heightCave; j <= height && j < heightCave + CaveScale; j++)
+                if (j <= height)
                 {
-                    // Spawn cave game object
-                    Spawn(Cave, new Vector3(i + offset + 1, j, 0), Quaternion.identity, 1, 1, 2);
+                    Spawn(Cave, new Vector3(i + offset, j, 0), Quaternion.identity, 1, 1, 2, true);
                 }
+
+                if (CaveCorner != null && j == heightCave)
+                {
+                    int prevHeightCave = Mathf.RoundToInt(_caveNoiseGenerator.GenerateNoise(i - 1, caveNoiseOffset, caveNoiseScale) * caveHeightScale);
+                    int nextHeightCave = Mathf.RoundToInt(_caveNoiseGenerator.GenerateNoise(i + 1, caveNoiseOffset, caveNoiseScale) * caveHeightScale);
+                    
+                    if (prevHeightCave < heightCave)
+                    {
+                        Spawn(CaveCorner, new Vector3(i + offset, j - 1, 0), Quaternion.Euler(0, 0, 180), 1, 1, 2, true);
+                    }
+                    if (nextHeightCave < heightCave)
+                    {
+                        Spawn(CaveCorner, new Vector3(i + offset, j - 1, 0), Quaternion.Euler(0, 0, 90), 1, 1, 2, true);
+                    }
+                }
+
+                if (CaveCorner != null && j == heightCave + CaveScale - 1)
+                {
+                    int prevHeightCave = Mathf.RoundToInt(_caveNoiseGenerator.GenerateNoise(i - 1, caveNoiseOffset, caveNoiseScale) * caveHeightScale);
+                    int nextHeightCave = Mathf.RoundToInt(_caveNoiseGenerator.GenerateNoise(i + 1, caveNoiseOffset, caveNoiseScale) * caveHeightScale);
+                    
+                    if (prevHeightCave < heightCave)
+                    {
+                        Spawn(CaveCorner, new Vector3(i + offset - 1, j, 0), Quaternion.Euler(0, 0, 0), 1, 1, 2, true);
+                    }
+                    if (nextHeightCave < heightCave )
+                    {
+                        Spawn(CaveCorner, new Vector3(i + offset + 1, j, 0), Quaternion.Euler(0, 0, 270), 1, 1, 2, true);
+                    }
+                }
+                
             }
 
-            // Check if this is an entry or exit point for the cave
-            if (i == 0 || i == width - 1)
-            {
-                // Generate a straight vertical line of cave entry/exit
-                for (int k = heightCave; k <= height; k++)
-                {
-                    Spawn(Cave, new Vector3(i + offset + 1, k, 0), Quaternion.identity, 1, 1, 2);
-                }
-            }
         }
+
         
-        rotation = Quaternion.identity;
         if (dirtCount == 0)
         {
             int grassRandom = UnityEngine.Random.Range(0, 1);
@@ -245,21 +286,21 @@ public void SceneGeneration()
             {
                 case 0:
                     // Spawn middle grass
-                    Spawn(GrassMiddle, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(GrassMiddle, new Vector3(i + offset, h, 0), Quaternion.identity);
                     break;
                 case 1:
                     // Spawn alternative middle grass
-                    Spawn(GrassMiddle2, new Vector3(i + offset, h, 0), rotation);
+                    Spawn(GrassMiddle2, new Vector3(i + offset, h, 0), Quaternion.identity);
                     break;
             }
         }
         else
         {
             dirtCount--;
-            Spawn(Dirt, new Vector3(i + offset, h, 0), rotation);
+            Spawn(Dirt, new Vector3(i + offset, h, 0), Quaternion.identity);
         }
 
-        if (prevHeight == height)
+        if (prevHeight == height && height == nextHeight)
         {
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h, Bridge != null);
