@@ -11,7 +11,8 @@ namespace SceneGen.Scripts
         CellularNoise,
         SimplexNoise,
         PerlinNoiseAndCellularNoise,
-        PerlinNoiseAndSimplexNoise
+        PerlinNoiseAndSimplexNoise,
+        DiamondSquareNoise
     }
 
     public interface INoiseGenerator
@@ -101,10 +102,79 @@ namespace SceneGen.Scripts
         }
     }
 
-    public class DiamondSquareNoise : INoiseGenerator
+    
+   public class DiamondSquareNoise : INoiseGenerator
+{
+    private float[,] grid;
+    private float roughness;
+    private int width;
+
+    public DiamondSquareNoise(int size, float roughness)
     {
-        
+        this.width = size;
+        this.roughness = roughness;
+        this.grid = new float[size, size];
     }
+
+    public void Generate()
+    {
+        DiamondSquare(0, 0, width - 1, width - 1);
+    }
+
+    private void DiamondSquare(int xStart, int yStart, int xEnd, int yEnd)
+    {
+        int width = xEnd - xStart;
+        if (width <= 1)
+            return;
+
+        int xMid = (xStart + xEnd) / 2;
+        int yMid = (yStart + yEnd) / 2;
+
+        // Diamond step
+        grid[xMid, yMid] = AverageOfCorners(xStart, yStart, xEnd, yEnd) + RandomOffset(width);
+
+        // Square step
+        grid[xMid, yStart] = AverageOfTopAndBottomCorners(xMid, yStart, yEnd) + RandomOffset(width);
+        grid[xStart, yMid] = AverageOfLeftAndRightCorners(xStart, yMid, xEnd) + RandomOffset(width);
+        grid[xMid, yEnd] = AverageOfTopAndBottomCorners(xMid, yStart, yEnd) + RandomOffset(width);
+        grid[xEnd, yMid] = AverageOfLeftAndRightCorners(xStart, yMid, xEnd) + RandomOffset(width);
+
+        // Recurse on sub-squares
+        DiamondSquare(xStart, yStart, xMid, yMid);
+        DiamondSquare(xMid, yStart, xEnd, yMid);
+        DiamondSquare(xStart, yMid, xMid, yEnd);
+        DiamondSquare(xMid, yMid, xEnd, yEnd);
+    }
+
+    private float AverageOfCorners(int xStart, int yStart, int xEnd, int yEnd)
+    {
+        return (grid[xStart, yStart] + grid[xStart, yEnd] + grid[xEnd, yStart] + grid[xEnd, yEnd]) / 4;
+    }
+
+    private float AverageOfTopAndBottomCorners(int xMid, int yStart, int yEnd)
+    {
+        return (grid[xMid, yStart] + grid[xMid, yEnd]) / 2;
+    }
+
+    private float AverageOfLeftAndRightCorners(int xStart, int yMid, int xEnd)
+    {
+        return (grid[xStart, yMid] + grid[xEnd, yMid]) / 2;
+    }
+
+    private float RandomOffset(int width)
+    {
+        return (float)(new System.Random().NextDouble() * 2 - 1) * width * roughness;
+    }
+    
+    public float GenerateNoise(int index, float noiseOffset, float noiseScale)
+    {
+        Generate();
+        return grid[index, 0];
+    }
+}
+
+
+
     
     
 
@@ -135,6 +205,9 @@ namespace SceneGen.Scripts
                     break;
                 case NoiseType.PerlinNoiseAndSimplexNoise:
                     noiseSingleton = new PerlinNoiseAndSimplexNoise();
+                    break;
+                case NoiseType.DiamondSquareNoise:
+                    noiseSingleton = new DiamondSquareNoise(100, 0.5f);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException(nameof(noiseType), noiseType, null);
