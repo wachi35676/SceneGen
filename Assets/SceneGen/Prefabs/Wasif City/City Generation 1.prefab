@@ -1,0 +1,78 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &3679926672632532274
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3679926672632532272}
+  - component: {fileID: 3679926672632532273}
+  m_Layer: 0
+  m_Name: City Generation 1
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3679926672632532272
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3679926672632532274}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 16.62327, y: 12.688483, z: -8.166327}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &3679926672632532273
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3679926672632532274}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9d86e41cd641494abafc13fcc1294b2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NoiseType: 0
+  BiomeSize: 37.8
+  PlayerJumpHeight: 1.96
+  PlayerSpeed: 2.97
+  Dirt: {fileID: 3375560545676859587, guid: 97ef51dba266ada49823a498b679b339, type: 3}
+  DirtEdge1: {fileID: 3375560545676859587, guid: ece025f47180397408b7baa86bbb3c40, type: 3}
+  DirtEdge2: {fileID: 0}
+  GrassMiddle: {fileID: 3375560545676859587, guid: 81329bfbe29809d4486fdf8b5e04b8cd, type: 3}
+  GrassMiddle2: {fileID: 0}
+  GrassPlatformEdge: {fileID: 3375560545676859587, guid: 7ff4984d16530304985214d5b5695add, type: 3}
+  GrassPlatformLeft: {fileID: 0}
+  GrassPlatformRight: {fileID: 0}
+  GrassPlatformMiddle: {fileID: 0}
+  Height: 0.87
+  CornerGrass: {fileID: 3375560545676859587, guid: cfbe5018ffe438b4386983ddbf59a670, type: 3}
+  CornerGrassWide: {fileID: 3375560545676859587, guid: c6a01d6bf4e6b894b8bb303b37c73c46, type: 3}
+  CornerGrassHigh: {fileID: 3375560545676859587, guid: 967ecfd99d9ff8549ad170551e5503e4, type: 3}
+  iterations: 4
+  input: F
+  angle: 30
+  rule: F[-F]F[+F][F]
+  cylinder: {fileID: 0}
+  Bridge: {fileID: 0}
+  Water: {fileID: 0}
+  WaterHeight: 0
+  WaterBody: {fileID: 0}
+  CaveCount: 0
+  Cave: {fileID: 0}
+  CaveCorner: {fileID: 0}
+  CaveHeight: 0
+  CaveScale: 0
+  Building: {fileID: 3375560545676859587, guid: 5fe884fcf02eb8e46919fff9b08a5b52, type: 3}
