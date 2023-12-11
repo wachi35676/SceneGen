@@ -100,6 +100,11 @@ namespace SceneGen.Scripts
                    simplex.GenerateNoise(index, noiseOffset, noiseScale);
         }
     }
+
+    public class DiamondSquareNoise : INoiseGenerator
+    {
+        
+    }
     
     
 
