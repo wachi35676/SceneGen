@@ -17,14 +17,19 @@ public class SceneGenPrototype : MonoBehaviour
 
     [Header("Tune biome ")]
     [Range(0.0f, 100.0f)]
-    public float BiomeSize;
+    public float BiomeWidth;
     
     [Header("Add your player's setting")]
     [Range(0.0f, 10.0f)]
     public float PlayerJumpHeight;
     [Range(0.0f, 10.0f)]
-    public float PlayerSpeed;
+    public float PlayerJumpDistance;
+    [Range(0.0f, 10.0f)]
+    public float PlayerAcceleration;
+    [Range(0.0f, 10.0f)]
+    public float PlayerMaxSpeed;
     
+    [Header("Add your Assets")]
     public GameObject Dirt;
     public GameObject DirtEdge1;
     public GameObject DirtEdge2;
@@ -143,7 +148,7 @@ public void SceneGeneration()
 {
     
     // Generate a random width for the biome
-    float width = BiomeSize;
+    float width = BiomeWidth;
 
     // Randomize the noise scale
     float noiseScale = 0.1f + UnityEngine.Random.Range(-0.05f, 0.05f);
@@ -353,7 +358,7 @@ public void SceneGeneration()
 
 private void GenerateBuildings()
 {
-    for(int i = 0; i < BiomeSize/4; i++)
+    for(int i = 0; i < BiomeWidth/4; i++)
     {
         //generate random number between 10 and 30
         int height = UnityEngine.Random.Range(2, 10);
@@ -384,8 +389,9 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
     if (UnityEngine.Random.Range(0, 100) < 10)
     {
         i++;
-        int gap = (int)UnityEngine.Random.Range(1, PlayerSpeed);
-        int platformWidth = UnityEngine.Random.Range(1, 10);
+        int gap = (int)UnityEngine.Random.Range(1, PlayerJumpDistance);
+        int distanceRequiredToReachTopSpeed = (int) ((PlayerMaxSpeed * PlayerMaxSpeed) / (2 * PlayerAcceleration));
+        int platformWidth = UnityEngine.Random.Range(distanceRequiredToReachTopSpeed - 5, distanceRequiredToReachTopSpeed + 5);
 
         for (int j = 0; j < h; j++)
         {
@@ -423,17 +429,17 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
                 int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
 
                 // Spawn the left part of the grass platform
-                Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap / 2), h + platformHeight, 0), Quaternion.identity);
+                Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap), h + platformHeight, 0), Quaternion.identity);
 
                 for (int k = 2; k < platformWidth; k++)
                 {
                     // Spawn middle parts of the grass platform
-                    Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap / 2), h + platformHeight, 0),
+                    Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap), h + platformHeight, 0),
                         Quaternion.identity);
                 }
 
                 // Spawn the right part of the grass platform
-                Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap / 2), h + platformHeight, 0),
+                Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap), h + platformHeight, 0),
                     Quaternion.identity);
             }
             else
@@ -446,7 +452,7 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
             }
         }
 
-        i += gap + platformWidth + 1;
+        i += 2 * gap + platformWidth + 1;
 
         for (int j = 0; j < h; j++)
         {
