@@ -81,6 +81,9 @@ public class SceneGenPrototype : MonoBehaviour
 
     [Header("(Optional) Building")]
     public GameObject Building;
+
+    [Header("(Optional) Collectables")]
+    public GameObject Collectable;
     
     private INoiseGenerator _noiseGenerator;
     
@@ -342,6 +345,14 @@ public void SceneGeneration()
         {
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h, Bridge != null);
+        }
+
+        if (Collectable != null)
+        {
+            if (UnityEngine.Random.Range(0, 100) < 10)
+            {
+                Spawn(Collectable, new Vector3(i + offset, h + 1, 0), Quaternion.identity, 1, 1, 3);
+            }
         }
     }
 
