@@ -72,7 +72,6 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject WaterBody;
 
     [Header("(Optional) Cave")]
-    public int CaveCount;
     public GameObject Cave;
     public GameObject CaveCorner;
     [Range(0, 20)]
