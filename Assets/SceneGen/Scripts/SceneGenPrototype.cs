@@ -84,6 +84,12 @@ public class SceneGenPrototype : MonoBehaviour
     [Header("(Optional) Collectables")]
     public GameObject Collectable;
     
+    [Header("(Optional) Underwater")]
+    public GameObject UnderwaterObject1;
+    public GameObject UnderwaterObject2;
+    public GameObject UnderwaterObject3;
+    public GameObject UnderwaterObject4;
+
     private INoiseGenerator _noiseGenerator;
     
     public void Generate()
@@ -172,6 +178,8 @@ public void SceneGeneration()
     float caveHeightScale = CaveHeight;
     float caveNoiseOffset = UnityEngine.Random.Range(-100f, 100f);
     int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
+    
+    List<Vector3> underwaterObjectPositions = new List<Vector3>(); // List to store the positions of spawned underwater objects
     
     // Calculate the initial height based on noise
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
@@ -353,6 +361,48 @@ public void SceneGeneration()
                 Spawn(Collectable, new Vector3(i + offset, h + 1, 0), Quaternion.identity, 1, 1, 3);
             }
         }
+        
+        // Check if the current height matches grass middle or grass middle 2
+        bool isFlatSurface = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
+
+        // Spawn underwater objects randomly only on flat surfaces
+        if (isFlatSurface)
+        {
+            // Adjust the probability of spawning an underwater object here
+            if (UnityEngine.Random.Range(0, 100) < 20) // Adjust the percentage chance here
+            {
+                Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
+                if (!IsTooCloseToExisting(spawnPosition, underwaterObjectPositions, 1.5f)) // Adjust the minimum distance here
+                {
+                    int underwaterObjectIndex = UnityEngine.Random.Range(1, 5);
+                    GameObject underwaterObject = null;
+                    switch (underwaterObjectIndex)
+                    {
+                        case 1:
+                            underwaterObject = UnderwaterObject1;
+                            break;
+                        case 2:
+                            underwaterObject = UnderwaterObject2;
+                            break;
+                        case 3:
+                            underwaterObject = UnderwaterObject3;
+                            break;
+                        case 4:
+                            underwaterObject = UnderwaterObject4;
+                            break;
+                    }
+                    if (underwaterObject != null)
+                    {
+                        Spawn(underwaterObject, spawnPosition, Quaternion.identity, 1, 1, 3);
+                        underwaterObjectPositions.Add(spawnPosition);
+                    }
+                }
+            }
+        }
+
+
+        
+        
     }
 
     if (Water != null)
@@ -364,6 +414,19 @@ public void SceneGeneration()
     {
         GenerateBuildings();
     }
+}
+
+// Function to check if a new position is too close to existing positions
+bool IsTooCloseToExisting(Vector3 newPosition, List<Vector3> existingPositions, float minDistance)
+{
+    foreach (Vector3 existingPosition in existingPositions)
+    {
+        if (Vector3.Distance(newPosition, existingPosition) < minDistance)
+        {
+            return true; // Too close to an existing position
+        }
+    }
+    return false; // Not too close to any existing position
 }
 
 private void GenerateBuildings()
