@@ -89,6 +89,9 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject UnderwaterObject2;
     public GameObject UnderwaterObject3;
     public GameObject UnderwaterObject4;
+    public GameObject CoralReef1;
+    public GameObject CoralReef2;
+    public GameObject CoralReef3;
 
     private INoiseGenerator _noiseGenerator;
     
@@ -364,6 +367,7 @@ public void SceneGeneration()
         
         // Check if the current height matches grass middle or grass middle 2
         bool isFlatSurface = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
+        
 
         // Spawn underwater objects randomly only on flat surfaces
         if (isFlatSurface)
@@ -394,6 +398,40 @@ public void SceneGeneration()
                     if (underwaterObject != null)
                     {
                         Spawn(underwaterObject, spawnPosition, Quaternion.identity, 1, 1, 3);
+                        underwaterObjectPositions.Add(spawnPosition);
+                    }
+                }
+            }
+        }
+        
+        bool isFlatSurface2 = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
+
+        // Spawn underwater objects randomly only on flat surfaces
+        if (isFlatSurface2)
+        {
+            // Spawn coral reefs
+            if (UnityEngine.Random.Range(0, 100) < 20) // Adjust the percentage chance here
+            {
+                Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
+                if (!IsTooCloseToExisting(spawnPosition, underwaterObjectPositions, 1f)) // Adjust the minimum distance here
+                {
+                    int coralReefIndex = UnityEngine.Random.Range(1, 4);
+                    GameObject coralReef = null;
+                    switch (coralReefIndex)
+                    {
+                        case 1:
+                            coralReef = CoralReef1;
+                            break;
+                        case 2:
+                            coralReef = CoralReef2;
+                            break;
+                        case 3:
+                            coralReef = CoralReef3;
+                            break;
+                    }
+                    if (coralReef != null)
+                    {
+                        Spawn(coralReef, spawnPosition, Quaternion.identity, 1, 1, 3);
                         underwaterObjectPositions.Add(spawnPosition);
                     }
                 }
