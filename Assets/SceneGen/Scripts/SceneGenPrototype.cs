@@ -79,7 +79,7 @@ public class SceneGenPrototype : MonoBehaviour
     public float CaveScale;
 
     [Header("(Optional) Building")]
-    public GameObject Building;
+    public GameObject[] Buildings;
 
     [Header("(Optional) Collectables")]
     public GameObject Collectable;
@@ -448,9 +448,9 @@ public void SceneGeneration()
         GenerateWater((int)width + offset, (int)WaterHeight);
     }
     
-    if (Building != null)
+    if (Buildings.Length > 0)
     {
-        GenerateBuildings();
+        GenerateBuildings(offset);
     }
 }
 
@@ -467,15 +467,15 @@ bool IsTooCloseToExisting(Vector3 newPosition, List<Vector3> existingPositions, 
     return false; // Not too close to any existing position
 }
 
-private void GenerateBuildings()
+private void GenerateBuildings(int offset, int scale = 2)
 {
-    for(int i = 0; i < BiomeWidth/4; i++)
+    for(int i = 0; i < (BiomeWidth + offset)/scale; i++)
     {
-        //generate random number between 10 and 30
         int height = UnityEngine.Random.Range(2, 10);
+        int buildingIndex = UnityEngine.Random.Range(0, Buildings.Length);
         for (int j = 0; j < height; j++)
         {
-            Spawn(Building, new Vector3(i * 4, j * 4, 0), Quaternion.identity, 4 , 4, -1);
+            Spawn(Buildings[buildingIndex], new Vector3(i * scale, j * scale, 0), Quaternion.identity, scale , scale, -1);
         }
     }
 }
