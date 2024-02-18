@@ -92,9 +92,7 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject UnderwaterObject2;
     public GameObject UnderwaterObject3;
     public GameObject UnderwaterObject4;
-    public GameObject CoralReef1;
-    public GameObject CoralReef2;
-    public GameObject CoralReef3;
+    public GameObject [] CoralReefs;
 
     private INoiseGenerator _noiseGenerator;
     
@@ -418,22 +416,9 @@ public void SceneGeneration()
                 Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
                 if (!IsTooCloseToExisting(spawnPosition, underwaterObjectPositions, 1f)) // Adjust the minimum distance here
                 {
-                    int coralReefIndex = UnityEngine.Random.Range(1, 4);
-                    GameObject coralReef = null;
-                    switch (coralReefIndex)
+                    if (CoralReefs.Length > 0)
                     {
-                        case 1:
-                            coralReef = CoralReef1;
-                            break;
-                        case 2:
-                            coralReef = CoralReef2;
-                            break;
-                        case 3:
-                            coralReef = CoralReef3;
-                            break;
-                    }
-                    if (coralReef != null)
-                    {
+                        GameObject coralReef = CoralReefs[UnityEngine.Random.Range(0, CoralReefs.Length)];
                         Spawn(coralReef, spawnPosition, Quaternion.identity, 1, 1, 3);
                         underwaterObjectPositions.Add(spawnPosition);
                     }
@@ -553,6 +538,11 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
 
                 for (int k = 2; k < platformWidth; k++)
                 {
+                   if (UnityEngine.Random.Range(0, 100) < 50 && CoralReefs.Length > 0)
+                    {
+                        GameObject coralReef = CoralReefs[UnityEngine.Random.Range(0, CoralReefs.Length)];
+                        Spawn(coralReef, new Vector3(i + k + (gap), h + platformHeight + 1, 0), Quaternion.identity, 1, 1, 3);
+                    }
                     // Spawn middle parts of the grass platform
                     Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap), h + platformHeight, 0),
                         Quaternion.identity);
