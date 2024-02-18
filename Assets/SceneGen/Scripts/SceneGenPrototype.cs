@@ -80,6 +80,9 @@ public class SceneGenPrototype : MonoBehaviour
 
     [Header("(Optional) Building")]
     public GameObject[] Buildings;
+    
+    [Header("(Optional) Traffic Light")]
+    public GameObject TrafficLight;
 
     [Header("(Optional) Collectables")]
     public GameObject Collectable;
@@ -530,6 +533,12 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         // Spawn the edge of the grass platform
         Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
         
+        if (TrafficLight != null)
+        {
+            Spawn(TrafficLight, new Vector3(i, h + 3f/2f, 0), Quaternion.identity, 2, 1, 3);
+            
+        }
+        
         //generate a random number 1 or 0
         int bridgeRandom = UnityEngine.Random.Range(0, 2);
 
@@ -589,6 +598,12 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         }
         // Spawn the inverted edge of the grass platform
         Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
+        
+        if (TrafficLight != null)
+        {
+            Spawn(TrafficLight, new Vector3(i, h + (3f/2f), 0), Quaternion.identity, 2, 1, 3);
+            
+        }
     }
 
     int offset = i - starting;
