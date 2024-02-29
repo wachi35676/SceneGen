@@ -19,6 +19,8 @@ public class SceneGenPrototype : MonoBehaviour
     [Range(0.0f, 100.0f)]
     public float BiomeWidth;
     
+    public float TotalWidth;
+    
     [Header("Add your player's setting")]
     [Range(0.0f, 10.0f)]
     public float PlayerJumpHeight;
@@ -61,6 +63,11 @@ public class SceneGenPrototype : MonoBehaviour
     public Dictionary<char, string> rules = new Dictionary<char, string>();
     
     public GameObject cylinder;
+    
+    [Header("(Optional) Static Objects")]
+    public GameObject[] StaticObject;
+    [Range(0, 100)]
+    public int spawnChance;
     
     [Header("(Optional) Add Bridge")]
     public GameObject Bridge;
@@ -345,6 +352,15 @@ public void SceneGeneration()
                 // Spawn middle grass
                 Spawn(GrassMiddle, new Vector3(i + offset, h, 0), Quaternion.identity);
             }
+            
+            if (StaticObject.Length > 0)
+            {
+                if (UnityEngine.Random.Range(0, 100) < spawnChance)
+                {
+                    GameObject staticObject = StaticObject[UnityEngine.Random.Range(0, StaticObject.Length)];
+                    Spawn(staticObject, new Vector3(i + offset, h + 1, 0), Quaternion.identity, 1, 1, 3);
+                }
+            }
         }
         else
         {
@@ -440,6 +456,8 @@ public void SceneGeneration()
     {
         GenerateBuildings(offset);
     }
+    
+    TotalWidth = BiomeWidth + offset;
 }
 
 // Function to check if a new position is too close to existing positions
