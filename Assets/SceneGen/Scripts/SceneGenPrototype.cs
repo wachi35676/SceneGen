@@ -212,14 +212,14 @@ public void SceneGeneration()
         nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale) * heightScale);
         
         
-        if (CornerWide != null && prevHeight == lastLastHeight && height == prevHeight + 1)
+        if (CornerWide.Length > 0 && prevHeight == lastLastHeight && height == prevHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
             Spawn(CornerWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2, 1);
             dirtCount = 1;
             h--;
         }
-        else if (Corner != null && height == prevHeight + 1)
+        else if (Corner.Length > 0 && height == prevHeight + 1)
         {
             // Spawn corner grass at higher terrain
             Spawn(Corner, new Vector3(i + offset, height - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
@@ -227,7 +227,7 @@ public void SceneGeneration()
             h--;
             h--;
         }
-        else if (CornerHigh != null && height == prevHeight + 2)
+        else if (CornerHigh.Length > 0 && height == prevHeight + 2)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
@@ -237,14 +237,14 @@ public void SceneGeneration()
             h--;
         }
             
-        else if (CornerWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
+        else if (CornerWide.Length > 0 && nextHeight == nextNextHeight && height == nextHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
             Spawn(CornerWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.identity, 2, 2, 1);
             dirtCount = 1;
             h--;
         }
-        else if (Corner != null && height == nextHeight + 1)
+        else if (Corner.Length > 0 && height == nextHeight + 1)
         {
             // Spawn corner grass at higher terrain
             Spawn(Corner, new Vector3(i + offset , height - 1f / 2f, 0), Quaternion.identity, 2, 1, 1);
@@ -253,7 +253,7 @@ public void SceneGeneration()
             h--;
             
         }
-        else if (CornerHigh != null && height == nextHeight + 2)
+        else if (CornerHigh.Length > 0 && height == nextHeight + 2)
         {
             // Spawn corner grass at higher terrain
             Spawn(CornerHigh, new Vector3(i + offset, height - 1, 0), Quaternion.identity, 3, 1, 1);
@@ -444,7 +444,7 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         //generate a random number 1 or 0
         int bridgeRandom = UnityEngine.Random.Range(0, 2);
 
-        if (PlatformLeft != null && PlatformMiddle != null && PlatformRight != null)
+        if (PlatformLeft.Length > 0  && PlatformMiddle.Length > 0 && PlatformRight.Length > 0)
         {
             if (!isBridge || bridgeRandom == 0)
             {
