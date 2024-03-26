@@ -32,24 +32,22 @@ public class SceneGenPrototype : MonoBehaviour
     public float PlayerMaxSpeed;
     
     [Header("Add your Assets")]
-    public GameObject Dirt;
-    public GameObject DirtEdge1;
-    public GameObject DirtEdge2;
-    public GameObject GrassMiddle;
-    public GameObject GrassMiddle2;
+    public GameObject [] Top;
+    public GameObject [] Dirt;
+    public GameObject [] Cliff;
 
-    public GameObject GrassPlatformEdge;
-    public GameObject GrassPlatformLeft;
-    public GameObject GrassPlatformRight;
-    public GameObject GrassPlatformMiddle;
+    public GameObject [] CliffCorner;
+    public GameObject [] PlatformLeft;
+    public GameObject [] PlatformRight;
+    public GameObject [] PlatformMiddle;
     
     [Range(0.0f, 20.0f)]
     public float Height;
     
     [Header("(Optional) Add corner grass")]
-    public GameObject CornerGrass;
-    public GameObject CornerGrassWide;
-    public GameObject CornerGrassHigh;
+    public GameObject [] Corner;
+    public GameObject [] CornerWide;
+    public GameObject [] CornerHigh;
     
     
     [Header("(Optional) Add Tree")]
@@ -138,6 +136,12 @@ public class SceneGenPrototype : MonoBehaviour
         }
 
     }
+    
+    void Spawn(GameObject [] obj, Vector3 position, Quaternion rotation, int heightScale = 1, int widthScale = 1, int orderInLayer = 0, bool toMask = false)
+    {
+        GameObject selectedObject = obj[UnityEngine.Random.Range(0, obj.Length)];
+        Spawn(selectedObject, position, rotation, heightScale, widthScale, orderInLayer, toMask);
+    }
 
     
     public void Clear()
@@ -208,51 +212,51 @@ public void SceneGeneration()
         nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(i + 2, noiseOffset, noiseScale) * heightScale);
         
         
-        if (CornerGrassWide != null && prevHeight == lastLastHeight && height == prevHeight + 1)
+        if (CornerWide != null && prevHeight == lastLastHeight && height == prevHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
-            Spawn(CornerGrassWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2, 1);
+            Spawn(CornerWide, new Vector3((i + offset) - 1f / 2f, (height) - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2, 2, 1);
             dirtCount = 1;
             h--;
         }
-        else if (CornerGrass != null && height == prevHeight + 1)
+        else if (Corner != null && height == prevHeight + 1)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrass, new Vector3(i + offset, height - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
+            Spawn(Corner, new Vector3(i + offset, height - 1f / 2f, 0), Quaternion.Euler(180, 0, 180), 2);
             dirtCount = 1;
             h--;
             h--;
         }
-        else if (CornerGrassHigh != null && height == prevHeight + 2)
+        else if (CornerHigh != null && height == prevHeight + 2)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
+            Spawn(CornerHigh, new Vector3(i + offset, height - 1, 0), Quaternion.Euler(180, 0, 180), 3);
             dirtCount = 1;
             h--;
             h--;
             h--;
         }
             
-        else if (CornerGrassWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
+        else if (CornerWide != null && nextHeight == nextNextHeight && height == nextHeight + 1)
         {
             // Spawn wider corner grass at higher terrain
-            Spawn(CornerGrassWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.identity, 2, 2, 1);
+            Spawn(CornerWide, new Vector3((i + offset) + 1f / 2f, (height) - 1f / 2f, 0), Quaternion.identity, 2, 2, 1);
             dirtCount = 1;
             h--;
         }
-        else if (CornerGrass != null && height == nextHeight + 1)
+        else if (Corner != null && height == nextHeight + 1)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrass, new Vector3(i + offset , height - 1f / 2f, 0), Quaternion.identity, 2, 1, 1);
+            Spawn(Corner, new Vector3(i + offset , height - 1f / 2f, 0), Quaternion.identity, 2, 1, 1);
             dirtCount = 1;
             h--;
             h--;
             
         }
-        else if (CornerGrassHigh != null && height == nextHeight + 2)
+        else if (CornerHigh != null && height == nextHeight + 2)
         {
             // Spawn corner grass at higher terrain
-            Spawn(CornerGrassHigh, new Vector3(i + offset, height - 1, 0), Quaternion.identity, 3, 1, 1);
+            Spawn(CornerHigh, new Vector3(i + offset, height - 1, 0), Quaternion.identity, 3, 1, 1);
             dirtCount = 1;
             h--;
             h--;
@@ -324,26 +328,7 @@ public void SceneGeneration()
         
         if (dirtCount == 0)
         {
-            int grassRandom = UnityEngine.Random.Range(0, 1);
-            if (GrassMiddle2 != null)
-            {
-                switch (grassRandom)
-                {
-                    case 0:
-                        // Spawn middle grass
-                        Spawn(GrassMiddle, new Vector3(i + offset, h, 0), Quaternion.identity);
-                        break;
-                    case 1:
-                        // Spawn alternative middle grass
-                        Spawn(GrassMiddle2, new Vector3(i + offset, h, 0), Quaternion.identity);
-                        break;
-                }
-            }
-            else
-            {
-                // Spawn middle grass
-                Spawn(GrassMiddle, new Vector3(i + offset, h, 0), Quaternion.identity);
-            }
+            Spawn(Top, new Vector3(i + offset, h, 0), Quaternion.identity);
             
             // Check if the current height matches grass middle or grass middle 2
             bool isFlatSurface = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
@@ -358,13 +343,9 @@ public void SceneGeneration()
                     Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
                     if (!IsTooCloseToExisting(spawnPosition, ObjectPositions, minDistance)) // Adjust the minimum distance here
                     {
-                        int ObjectIndex = UnityEngine.Random.Range(0, StaticObject.Length);
-                        GameObject staticGameObject = StaticObject[ObjectIndex];
-                        if (staticGameObject != null)
-                        {
-                            Spawn(staticGameObject, spawnPosition, Quaternion.identity, 1, 1, 3);
-                            ObjectPositions.Add(spawnPosition);
-                        }
+                        Spawn(StaticObject, spawnPosition, Quaternion.identity, 1, 1, 3);
+                        ObjectPositions.Add(spawnPosition);
+                        
                     }
                 }
             }
@@ -414,10 +395,10 @@ private void GenerateBuildings(int offset, int scale = 2)
     for(int i = 0; i < (BiomeWidth + offset)/scale; i++)
     {
         int height = UnityEngine.Random.Range(2, 10);
-        int buildingIndex = UnityEngine.Random.Range(0, Buildings.Length);
+        GameObject selectedObject = Buildings[UnityEngine.Random.Range(0, Buildings.Length)];
         for (int j = 0; j < height; j++)
         {
-            Spawn(Buildings[buildingIndex], new Vector3(i * scale, j * scale, 0), Quaternion.identity, scale , scale, -1);
+            Spawn(selectedObject, new Vector3(i * scale, j * scale, 0), Quaternion.identity, scale , scale, -1);
         }
     }
 }
@@ -448,29 +429,11 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
 
         for (int j = 0; j < h; j++)
         {
-            if (DirtEdge2 != null)
-            {
-                int dirtRandom = UnityEngine.Random.Range(0, 1);
-                switch (dirtRandom)
-                {
-                    case 0:
-                        // Spawn dirt edge type 1
-                        Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.identity);
-                        break;
-                    case 1:
-                        // Spawn dirt edge type 2
-                        Spawn(DirtEdge2, new Vector3(i, j, 0), Quaternion.identity);
-                        break;
-                }
-            }
-            else
-            {
-                Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.identity);
-            }
+            Spawn(Cliff, new Vector3(i, j, 0), Quaternion.identity);
         }
 
         // Spawn the edge of the grass platform
-        Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.identity);
+        Spawn(CliffCorner, new Vector3(i, h, 0), Quaternion.identity);
         
         if (TrafficLight != null)
         {
@@ -481,29 +444,28 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
         //generate a random number 1 or 0
         int bridgeRandom = UnityEngine.Random.Range(0, 2);
 
-        if (GrassPlatformLeft != null && GrassPlatformMiddle != null && GrassPlatformRight != null)
+        if (PlatformLeft != null && PlatformMiddle != null && PlatformRight != null)
         {
             if (!isBridge || bridgeRandom == 0)
             {
                 int platformHeight = (int)UnityEngine.Random.Range(1, PlayerJumpHeight);
 
                 // Spawn the left part of the grass platform
-                Spawn(GrassPlatformLeft, new Vector3(i + 1 + (gap), h + platformHeight, 0), Quaternion.identity);
+                Spawn(PlatformLeft, new Vector3(i + 1 + (gap), h + platformHeight, 0), Quaternion.identity);
 
                 for (int k = 2; k < platformWidth; k++)
                 {
                    if (UnityEngine.Random.Range(0, 100) < spawnChance && StaticObject.Length > 0)
                     {
-                        GameObject staticGameObject = StaticObject[UnityEngine.Random.Range(0, StaticObject.Length)];
-                        Spawn(staticGameObject, new Vector3(i + k + (gap), h + platformHeight + 1, 0), Quaternion.identity, 1, 1, 3);
+                        Spawn(StaticObject, new Vector3(i + k + (gap), h + platformHeight + 1, 0), Quaternion.identity, 1, 1, 3);
                     }
                     // Spawn middle parts of the grass platform
-                    Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap), h + platformHeight, 0),
+                    Spawn(PlatformMiddle, new Vector3(i + k + (gap), h + platformHeight, 0),
                         Quaternion.identity);
                 }
 
                 // Spawn the right part of the grass platform
-                Spawn(GrassPlatformRight, new Vector3(i + platformWidth + (gap), h + platformHeight, 0),
+                Spawn(PlatformRight, new Vector3(i + platformWidth + (gap), h + platformHeight, 0),
                     Quaternion.identity);
             }
             else
@@ -520,28 +482,10 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
 
         for (int j = 0; j < h; j++)
         {
-            if (DirtEdge2 != null)
-            {
-                int dirtRandom = UnityEngine.Random.Range(0, 1);
-                switch (dirtRandom)
-                {
-                    case 0:
-                        // Spawn inverted dirt edge type 1
-                        Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
-                        break;
-                    case 1:
-                        // Spawn inverted dirt edge type 2
-                        Spawn(DirtEdge2, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
-                        break;
-                }
-            }
-            else
-            {
-                Spawn(DirtEdge1, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
-            }
+            Spawn(Cliff, new Vector3(i, j, 0), Quaternion.Euler(180, 0, 180));
         }
         // Spawn the inverted edge of the grass platform
-        Spawn(GrassPlatformEdge, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
+        Spawn(CliffCorner, new Vector3(i, h, 0), Quaternion.Euler(180, 0, 180));
         
         if (TrafficLight != null)
         {
