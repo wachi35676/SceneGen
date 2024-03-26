@@ -68,6 +68,7 @@ public class SceneGenPrototype : MonoBehaviour
     public GameObject[] StaticObject;
     [Range(0, 100)]
     public int spawnChance;
+    public int minDistance;
     
     [Header("(Optional) Add Bridge")]
     public GameObject Bridge;
@@ -91,16 +92,7 @@ public class SceneGenPrototype : MonoBehaviour
     [Header("(Optional) Traffic Light")]
     public GameObject TrafficLight;
 
-    [Header("(Optional) Collectables")]
-    public GameObject Collectable;
     
-    [Header("(Optional) Underwater")]
-    public GameObject UnderwaterObject1;
-    public GameObject UnderwaterObject2;
-    public GameObject UnderwaterObject3;
-    public GameObject UnderwaterObject4;
-    public GameObject [] CoralReefs;
-
     private INoiseGenerator _noiseGenerator;
     
     public void Generate()
@@ -190,7 +182,7 @@ public void SceneGeneration()
     float caveNoiseOffset = UnityEngine.Random.Range(-100f, 100f);
     int heightCave = Mathf.RoundToInt(caveNoiseValue * caveHeightScale);
     
-    List<Vector3> underwaterObjectPositions = new List<Vector3>(); // List to store the positions of spawned underwater objects
+    List<Vector3> ObjectPositions = new List<Vector3>(); // List to store the positions of spawned underwater objects
     
     // Calculate the initial height based on noise
     int nextNextHeight = Mathf.RoundToInt(_noiseGenerator.GenerateNoise(2, noiseOffset, noiseScale) * heightScale);
@@ -353,12 +345,27 @@ public void SceneGeneration()
                 Spawn(GrassMiddle, new Vector3(i + offset, h, 0), Quaternion.identity);
             }
             
-            if (StaticObject.Length > 0)
+            // Check if the current height matches grass middle or grass middle 2
+            bool isFlatSurface = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
+        
+
+            // Spawn underwater objects randomly only on flat surfaces
+            if (isFlatSurface && StaticObject.Length > 0)
             {
-                if (UnityEngine.Random.Range(0, 100) < spawnChance)
+                // Adjust the probability of spawning an underwater object here
+                if (UnityEngine.Random.Range(0, 100) < spawnChance) // Adjust the percentage chance here
                 {
-                    GameObject staticObject = StaticObject[UnityEngine.Random.Range(0, StaticObject.Length)];
-                    Spawn(staticObject, new Vector3(i + offset, h + 1, 0), Quaternion.identity, 1, 1, 3);
+                    Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
+                    if (!IsTooCloseToExisting(spawnPosition, ObjectPositions, minDistance)) // Adjust the minimum distance here
+                    {
+                        int ObjectIndex = UnityEngine.Random.Range(0, StaticObject.Length);
+                        GameObject staticGameObject = StaticObject[ObjectIndex];
+                        if (staticGameObject != null)
+                        {
+                            Spawn(staticGameObject, spawnPosition, Quaternion.identity, 1, 1, 3);
+                            ObjectPositions.Add(spawnPosition);
+                        }
+                    }
                 }
             }
         }
@@ -373,77 +380,6 @@ public void SceneGeneration()
             // Generate platforms if the terrain height remains the same
             offset += GeneratePlatforms(i + offset, h, Bridge != null);
         }
-
-        if (Collectable != null)
-        {
-            if (UnityEngine.Random.Range(0, 100) < 10)
-            {
-                Spawn(Collectable, new Vector3(i + offset, h + 1, 0), Quaternion.identity, 1, 1, 3);
-            }
-        }
-        
-        // Check if the current height matches grass middle or grass middle 2
-        bool isFlatSurface = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
-        
-
-        // Spawn underwater objects randomly only on flat surfaces
-        if (isFlatSurface)
-        {
-            // Adjust the probability of spawning an underwater object here
-            if (UnityEngine.Random.Range(0, 100) < 20) // Adjust the percentage chance here
-            {
-                Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
-                if (!IsTooCloseToExisting(spawnPosition, underwaterObjectPositions, 1.5f)) // Adjust the minimum distance here
-                {
-                    int underwaterObjectIndex = UnityEngine.Random.Range(1, 5);
-                    GameObject underwaterObject = null;
-                    switch (underwaterObjectIndex)
-                    {
-                        case 1:
-                            underwaterObject = UnderwaterObject1;
-                            break;
-                        case 2:
-                            underwaterObject = UnderwaterObject2;
-                            break;
-                        case 3:
-                            underwaterObject = UnderwaterObject3;
-                            break;
-                        case 4:
-                            underwaterObject = UnderwaterObject4;
-                            break;
-                    }
-                    if (underwaterObject != null)
-                    {
-                        Spawn(underwaterObject, spawnPosition, Quaternion.identity, 1, 1, 3);
-                        underwaterObjectPositions.Add(spawnPosition);
-                    }
-                }
-            }
-        }
-        
-        bool isFlatSurface2 = (h == prevHeight && h == nextHeight) || (h == prevHeight + 1 && h == nextHeight + 1);
-
-        // Spawn underwater objects randomly only on flat surfaces
-        if (isFlatSurface2)
-        {
-            // Spawn coral reefs
-            if (UnityEngine.Random.Range(0, 100) < 20) // Adjust the percentage chance here
-            {
-                Vector3 spawnPosition = new Vector3(i + offset, h + 1, 0);
-                if (!IsTooCloseToExisting(spawnPosition, underwaterObjectPositions, 1f)) // Adjust the minimum distance here
-                {
-                    if (CoralReefs.Length > 0)
-                    {
-                        GameObject coralReef = CoralReefs[UnityEngine.Random.Range(0, CoralReefs.Length)];
-                        Spawn(coralReef, spawnPosition, Quaternion.identity, 1, 1, 3);
-                        underwaterObjectPositions.Add(spawnPosition);
-                    }
-                }
-            }
-        }
-
-
-        
         
     }
 
@@ -556,10 +492,10 @@ private int GeneratePlatforms(int i, int h, bool isBridge = false)
 
                 for (int k = 2; k < platformWidth; k++)
                 {
-                   if (UnityEngine.Random.Range(0, 100) < 50 && CoralReefs.Length > 0)
+                   if (UnityEngine.Random.Range(0, 100) < spawnChance && StaticObject.Length > 0)
                     {
-                        GameObject coralReef = CoralReefs[UnityEngine.Random.Range(0, CoralReefs.Length)];
-                        Spawn(coralReef, new Vector3(i + k + (gap), h + platformHeight + 1, 0), Quaternion.identity, 1, 1, 3);
+                        GameObject staticGameObject = StaticObject[UnityEngine.Random.Range(0, StaticObject.Length)];
+                        Spawn(staticGameObject, new Vector3(i + k + (gap), h + platformHeight + 1, 0), Quaternion.identity, 1, 1, 3);
                     }
                     // Spawn middle parts of the grass platform
                     Spawn(GrassPlatformMiddle, new Vector3(i + k + (gap), h + platformHeight, 0),
