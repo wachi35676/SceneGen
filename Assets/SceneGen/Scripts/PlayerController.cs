@@ -26,11 +26,11 @@ public class PlayerController : MonoBehaviour
         // Flip character sprite based on movement direction
         if (moveInput > 0)
         {
-            transform.localScale = new Vector3(1f, 1f, 1f);
+            transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
         }
         else if (moveInput < 0)
         {
-            transform.localScale = new Vector3(-1f, 1f, 1f);
+            transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
         }
 
         // Set animation parameters
