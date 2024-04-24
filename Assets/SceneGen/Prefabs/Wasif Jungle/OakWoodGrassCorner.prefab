@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4166698258765514910}
   - component: {fileID: 1329681299161438741}
-  - component: {fileID: 7425655219964583943}
+  - component: {fileID: 6392769766294466109}
   m_Layer: 0
   m_Name: OakWoodGrassCorner
   m_TagString: Untagged
@@ -85,7 +85,7 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
---- !u!60 &7425655219964583943
+--- !u!60 &6392769766294466109
 PolygonCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -102,7 +102,7 @@ PolygonCollider2D:
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 0.24, y: 0.24}
+    oldSize: {x: 0.24, y: 0.48}
     newSize: {x: 1, y: 1}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
@@ -110,9 +110,8 @@ PolygonCollider2D:
   m_AutoTiling: 0
   m_Points:
     m_Paths:
-    - - {x: -0.089999996, y: 0.12}
-      - {x: -0.12, y: 0.12}
-      - {x: -0.12, y: -0.12}
-      - {x: 0.12, y: -0.12}
-      - {x: 0.12, y: -0.08}
-      - {x: 0.04, y: 0.01}
+    - - {x: -0.12, y: 0.24}
+      - {x: -0.12, y: -0.24}
+      - {x: 0.12, y: -0.24}
+      - {x: 0.12, y: 0.03}
+      - {x: -0.089999996, y: 0.24}
