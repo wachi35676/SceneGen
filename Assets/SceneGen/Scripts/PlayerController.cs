@@ -24,13 +24,15 @@ public class PlayerController : MonoBehaviour
         _rigidbody2D.velocity = new Vector2(moveInput * speed, _rigidbody2D.velocity.y);
 
         // Flip character sprite based on movement direction
+        SpriteRenderer spriteRenderer = GetComponent<SpriteRenderer>();
+
         if (moveInput > 0)
         {
-            transform.localScale = new Vector3(0.5f, 0.5f, 0.5f);
+            spriteRenderer.flipX = false;
         }
         else if (moveInput < 0)
         {
-            transform.localScale = new Vector3(-0.5f, 0.5f, 0.5f);
+            spriteRenderer.flipX = true;
         }
 
         // Set animation parameters
